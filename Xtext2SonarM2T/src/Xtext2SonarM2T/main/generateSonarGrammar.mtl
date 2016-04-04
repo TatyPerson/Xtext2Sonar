@@ -1,0 +1,525 @@
+[comment encoding = UTF-8 /]
+[**
+ * The documentation of the module generateSonarGrammar.
+ */]
+[module generateSonarGrammar('http://www.eclipse.org/2008/Xtext')]
+
+[query public rename(keyword: Keyword) : String = 
+    invoke('Xtext2SonarM2T.main.RenameSpecialKeywords', 
+'rename(org.eclipse.xtext.Keyword)', Sequence{keyword})/]
+
+[**
+ * The documentation of the template SonarGrammarImpl.
+ * @param aGrammar
+ */]
+[template public SonarGrammarImpl(aGrammar : Grammar)]
+[comment @main /]
+[if (not aGrammar.name.contains('Terminals'))]
+[file (aGrammar.name.concat('Impl.java'), false, 'UTF-8')]
+package org.sonar.[aGrammar.name/].api;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import com.sonar.sslr.api.Grammar;
+import org.sonar.sslr.grammar.GrammarRuleKey;
+import org.sonar.[aGrammar.name/].[aGrammar.name/]Configuration;
+import org.sonar.sslr.grammar.LexerfulGrammarBuilder;
+import static com.sonar.sslr.api.GenericTokenType.IDENTIFIER;
+import static org.sonar.[aGrammar.name/].api.[aGrammar.name/]TokenType.NUMERO;
+import static org.sonar.[aGrammar.name/].api.[aGrammar.name/]TokenType.CADENA;
+import static org.sonar.[aGrammar.name/].api.[aGrammar.name/]TokenType.CARACTER_;
+
+public enum [aGrammar.name.concat('Impl').toUpperFirst()/] implements GrammarRuleKey {
+	
+	[for (nameRule : String | aGrammar.rules.name)]
+	[if(not(i = aGrammar.rules->size()))]
+	[nameRule.toUpper()/],
+	[else]
+	[nameRule.toUpper()/];
+	[/if]
+	[/for]
+
+	public static final Logger LOG = LoggerFactory.getLogger("[aGrammar.name.concat('Impl').toUpperFirst()/]");
+
+	public static Grammar create([aGrammar.name.concat('Configuration')/] conf) {
+		 LexerfulGrammarBuilder b = LexerfulGrammarBuilder.create();
+
+		 toplevel(b, conf);
+		 generate(b);
+		[comment --- The first rule is the main rule of the Xtext grammar./]
+		 b.setRootRule([aGrammar.rules->at(1).name.toUpper()/]);
+
+		 return b.buildWithMemoizationOfMatchesForAllRules();
+	}
+
+	private static void toplevel(LexerfulGrammarBuilder b, [aGrammar.name.concat('Configuration')/] conf) {
+		[comment --- In the top level we define the main rule./]
+		b.rule([aGrammar.rules->at(1).name.toUpper()/]).is([if(aGrammar.rules->at(1).eAllContents(xtext::Alternatives)->size() <> 0)]
+		[comment --- If there are alternatives is a selection rule./]
+		[for(alternative : Alternatives | aGrammar.rules->at(1).eAllContents(xtext::Alternatives))]
+			[for(rule : RuleCall | alternative.eAllContents(xtext::RuleCall))]
+				[if(i = 1)]
+		[comment --- types of rule: Rule(Option1 | Option2)/]
+
+		b.firstOf([rule.rule.name.toUpper()/],
+				[elseif(i = alternative.eAllContents(xtext::RuleCall)->size())]
+		[rule.rule.name.toUpper()/])).skipIfOneChild();
+				[else]
+		[rule.rule.name.toUpper()/],			
+				[/if]
+			[/for]
+		[/for]
+		[comment --- If there aren't alternatives is a group rule./]
+		[/if]
+	}
+
+	private static void generate(LexerfulGrammarBuilder b) {
+		[comment --- We select the ParserRules because are the rules that define the rule grammar in Xtext./]
+		[for(rule : ParserRule | aGrammar.eAllContents(xtext::ParserRule))]
+			[comment --- We delete the first because is the top rule./]
+			[if(i <> 1)._and(rule.eAllContents(xtext::RuleCall)->size() = 1)._and(rule.name <> 'EString')._and(rule.name <> 'EInt')._and(rule.name <> 'EFloat')]
+			[if(rule.eAllContents(xtext::RuleCall)->at(1).rule.name.equalsIgnoreCase('EString')._or(rule.eAllContents(xtext::RuleCall)->at(1).rule.name.equalsIgnoreCase('CAD')))]
+		b.rule([rule.name.toUpper()/]).is(b.isOneOfThem(CADENA, CADENA));
+			[elseif(rule.eAllContents(xtext::RuleCall)->at(1).rule.name.equalsIgnoreCase('EInt'))]
+		b.rule([rule.name.toUpper()/]).is(b.isOneOfThem(NUMERO, NUMERO));
+			[elseif(rule.eAllContents(xtext::RuleCall)->at(1).rule.name.equalsIgnoreCase('EFloat'))]
+		b.rule([rule.name.toUpper()/]).is(b.isOneOfThem(NUMERO, NUMERO));
+			[elseif(rule.eAllContents(xtext::RuleCall)->at(1).rule.name.equalsIgnoreCase('CAR'))]
+		b.rule([rule.name.toUpper()/]).is(b.isOneOfThem(CARACTER_, CARACTER_));
+			[else]
+		b.rule([rule.name.toUpper()/]).is([rule.eAllContents(xtext::RuleCall)->at(1).rule.name.toUpper()/]);
+			[/if]
+			[elseif(i <> 1)._and(rule.name <> 'EString')._and(rule.name <> 'EInt')._and(rule.name <> 'EFloat')]
+		b.rule([rule.name.toUpper()/]).is([if(rule.eAllContents(xtext::Alternatives)->size() <> 0)]
+		[comment --- If there are alternatives is a selection rule./]
+				[for(alternative : Alternatives | rule.eAllContents(xtext::Alternatives))]
+					[comment --- The alternatives are RuleCall./]
+					[for(element : AbstractElement | rule.eAllContents(xtext::AbstractElement))]
+						[if(element.oclIsKindOf(xtext::RuleCall))]
+							[if(i = 2)]
+						[comment --- types of rule: Rule(Option1 | Option2)/]
+								[if(element.oclAsType(xtext::RuleCall).rule.name.equalsIgnoreCase('EString'))]
+		b.firstOf(b.isOneOfThem(CADENA, CADENA),
+								[elseif(element.oclAsType(xtext::RuleCall).rule.name.equalsIgnoreCase('EInt'))]
+		b.firstOf(b.isOneOfThem(NUMERO, NUMERO),
+								[else]
+		b.firstOf([element.oclAsType(xtext::RuleCall).rule.name.toUpper()/],
+							[/if]
+							[elseif(i = rule.eAllContents(xtext::AbstractElement)->size())]
+								[if(element.oclAsType(xtext::RuleCall).rule.name.equalsIgnoreCase('EString'))]
+		b.isOneOfThem(CADENA, CADENA))).skipIfOneChild();
+								[elseif(element.oclAsType(xtext::RuleCall).rule.name.equalsIgnoreCase('EInt'))]
+		b.isOneOfThem(NUMERO, NUMERO))).skipIfOneChild();
+								[else]
+		[element.oclAsType(xtext::RuleCall).rule.name.toUpper()/])).skipIfOneChild();
+							[/if]
+							[else]
+								[if(element.oclAsType(xtext::RuleCall).rule.name.equalsIgnoreCase('EString'))]
+		b.isOneOfThem(CADENA, CADENA),
+								[elseif(element.oclAsType(xtext::RuleCall).rule.name.equalsIgnoreCase('EInt'))]
+		b.isOneOfThem(NUMERO, NUMERO),
+								[else]
+		[element.oclAsType(xtext::RuleCall).rule.name.toUpper()/],
+								[/if]			
+							[/if]
+						[/if]
+						[if(element.oclIsKindOf(xtext::Keyword))]
+						[if(i = 2)]
+		b.firstOf(
+						[/if]
+						[if(element.oclAsType(xtext::Keyword).value = '+')]
+		b.isOneOfThem([aGrammar.name.concat('Punctuator').toUpperFirst()/].SUMA, [aGrammar.name.concat('Punctuator').toUpperFirst()/].SUMA)[if(i = 1)],[elseif(i = rule.eAllContents(xtext::AbstractElement)->size())])).skipIfOneChild();[else],[/if]
+						[elseif(element.oclAsType(xtext::Keyword).value = '-')]
+		b.isOneOfThem([aGrammar.name.concat('Punctuator').toUpperFirst()/].RESTA, [aGrammar.name.concat('Punctuator').toUpperFirst()/].RESTA)[if(i = 1)],[elseif(i = rule.eAllContents(xtext::AbstractElement)->size())])).skipIfOneChild();[else],[/if]
+						[elseif(element.oclAsType(xtext::Keyword).value = '*')]
+		b.isOneOfThem([aGrammar.name.concat('Punctuator').toUpperFirst()/].MULTIPLICACION, [aGrammar.name.concat('Punctuator').toUpperFirst()/].MULTIPLICACION)[if(i = 1)],[elseif(i = rule.eAllContents(xtext::AbstractElement)->size())])).skipIfOneChild();[else],[/if]
+						[elseif(element.oclAsType(xtext::Keyword).value = '/')]
+		b.isOneOfThem([aGrammar.name.concat('Punctuator').toUpperFirst()/].DIVISION, [aGrammar.name.concat('Punctuator').toUpperFirst()/].DIVISION)[if(i = 1)],[elseif(i = rule.eAllContents(xtext::AbstractElement)->size())])).skipIfOneChild();[else],[/if]
+						[elseif(element.oclAsType(xtext::Keyword).value = '<')]
+		b.isOneOfThem([aGrammar.name.concat('Punctuator').toUpperFirst()/].MENOR, [aGrammar.name.concat('Punctuator').toUpperFirst()/].MENOR)[if(i = 1)],[elseif(i = rule.eAllContents(xtext::AbstractElement)->size())])).skipIfOneChild();[else],[/if]
+						[elseif(element.oclAsType(xtext::Keyword).value = '>')]
+		b.isOneOfThem([aGrammar.name.concat('Punctuator').toUpperFirst()/].MAYOR, [aGrammar.name.concat('Punctuator').toUpperFirst()/].MAYOR)[if(i = 1)],[elseif(i = rule.eAllContents(xtext::AbstractElement)->size())])).skipIfOneChild();[else],[/if]
+						[elseif(element.oclAsType(xtext::Keyword).value = '<=')]
+ 		b.isOneOfThem([aGrammar.name.concat('Punctuator').toUpperFirst()/].MENOR_IGUAL, [aGrammar.name.concat('Punctuator').toUpperFirst()/].MENOR_IGUAL)[if(i = 1)],[elseif(i = rule.eAllContents(xtext::AbstractElement)->size())])).skipIfOneChild();[else],[/if]
+						[elseif(element.oclAsType(xtext::Keyword).value = '>=')]
+  		b.isOneOfThem([aGrammar.name.concat('Punctuator').toUpperFirst()/].MAYOR_IGUAL, [aGrammar.name.concat('Punctuator').toUpperFirst()/].MAYOR_IGUAL)[if(i = 1)],[elseif(i = rule.eAllContents(xtext::AbstractElement)->size())])).skipIfOneChild();[else],[/if]
+						[elseif(element.oclAsType(xtext::Keyword).value = '=')]
+		b.isOneOfThem([aGrammar.name.concat('Punctuator').toUpperFirst()/].IGUAL, [aGrammar.name.concat('Punctuator').toUpperFirst()/].IGUAL)[if(i = 1)],[elseif(i = rule.eAllContents(xtext::AbstractElement)->size())])).skipIfOneChild();[else],[/if]
+						[elseif(element.oclAsType(xtext::Keyword).value = '<-')]
+		b.isOneOfThem([aGrammar.name.concat('Punctuator').toUpperFirst()/].ASIGNACION, [aGrammar.name.concat('Punctuator').toUpperFirst()/].ASIGNACION)[if(i = 1)],[elseif(i = rule.eAllContents(xtext::AbstractElement)->size())])).skipIfOneChild();[else],[/if]
+						[elseif(element.oclAsType(xtext::Keyword).value = '!=')]
+		b.isOneOfThem([aGrammar.name.concat('Punctuator').toUpperFirst()/].DISTINTO, [aGrammar.name.concat('Punctuator').toUpperFirst()/].DISTINTO)[if(i = 1)],[elseif(i = rule.eAllContents(xtext::AbstractElement)->size())])).skipIfOneChild();[else],[/if]
+						[elseif(element.oclAsType(xtext::Keyword).value = ')')]
+		b.isOneOfThem([aGrammar.name.concat('Punctuator').toUpperFirst()/].PARENTESIS_DER, [aGrammar.name.concat('Punctuator').toUpperFirst()/].PARENTESIS_DER)[if(i = 1)],[elseif(i = rule.eAllContents(xtext::AbstractElement)->size())])).skipIfOneChild();[else],[/if]
+						[elseif(element.oclAsType(xtext::Keyword).value = '(')]
+  		b.isOneOfThem([aGrammar.name.concat('Punctuator').toUpperFirst()/].PARENTESIS_IZQ, [aGrammar.name.concat('Punctuator').toUpperFirst()/].PARENTESIS_IZQ)[if(i = 1)],[elseif(i = rule.eAllContents(xtext::AbstractElement)->size())])).skipIfOneChild();[else],[/if]
+						[elseif(element.oclAsType(xtext::Keyword).value = '..')]
+  		b.isOneOfThem([aGrammar.name.concat('Punctuator').toUpperFirst()/].PUNTOS_SUSPENSIVOS, [aGrammar.name.concat('Punctuator').toUpperFirst()/].PUNTOS_SUSPENSIVOS)[if(i = 1)],[elseif(i = rule.eAllContents(xtext::AbstractElement)->size())])).skipIfOneChild();[else],[/if]
+						[elseif(element.oclAsType(xtext::Keyword).value = ':')._or(element.oclAsType(xtext::Keyword).value = ': ')]
+		b.isOneOfThem([aGrammar.name.concat('Punctuator').toUpperFirst()/].DOS_PUNTOS, [aGrammar.name.concat('Punctuator').toUpperFirst()/].DOS_PUNTOS)[if(i = 1)],[elseif(i = rule.eAllContents(xtext::AbstractElement)->size())])).skipIfOneChild();[else],[/if]
+						[elseif(element.oclAsType(xtext::Keyword).value = '.')]
+		b.isOneOfThem([aGrammar.name.concat('Punctuator').toUpperFirst()/].PUNTO, [aGrammar.name.concat('Punctuator').toUpperFirst()/].PUNTO)[if(i = 1)],[elseif(i = rule.eAllContents(xtext::AbstractElement)->size())])).skipIfOneChild();[else],[/if]
+						[elseif(element.oclAsType(xtext::Keyword).value = ',')]
+  		b.isOneOfThem([aGrammar.name.concat('Punctuator').toUpperFirst()/].COMA, [aGrammar.name.concat('Punctuator').toUpperFirst()/].COMA)[if(i = 1)],[elseif(i = rule.eAllContents(xtext::AbstractElement)->size())])).skipIfOneChild();[else],[/if]
+						[elseif(element.oclAsType(xtext::Keyword).value = '}')]
+  		b.isOneOfThem([aGrammar.name.concat('Punctuator').toUpperFirst()/].LLAVE_DER, [aGrammar.name.concat('Punctuator').toUpperFirst()/].LLAVE_DER)[if(i = 1)],[elseif(i = rule.eAllContents(xtext::AbstractElement)->size())])).skipIfOneChild();[else],[/if]
+						[elseif(element.oclAsType(xtext::Keyword).value = '{')]
+  		b.isOneOfThem([aGrammar.name.concat('Punctuator').toUpperFirst()/].LLAVE_IZQ, [aGrammar.name.concat('Punctuator').toUpperFirst()/].LLAVE_IZQ)[if(i = 1)],[elseif(i = rule.eAllContents(xtext::AbstractElement)->size())])).skipIfOneChild();[else],[/if]
+						[elseif(element.oclAsType(xtext::Keyword).value = ']')]
+  		b.isOneOfThem([aGrammar.name.concat('Punctuator').toUpperFirst()/].CORCHETE_DER, [aGrammar.name.concat('Punctuator').toUpperFirst()/].CORCHETE_DER)[if(i = 1)],[elseif(i = rule.eAllContents(xtext::AbstractElement)->size())])).skipIfOneChild();[else],[/if]
+						[elseif(element.oclAsType(xtext::Keyword).value = '[')]
+  		b.isOneOfThem([aGrammar.name.concat('Punctuator').toUpperFirst()/].CORCHETE_IZQ, [aGrammar.name.concat('Punctuator').toUpperFirst()/].CORCHETE_IZQ)[if(i = 1)],[elseif(i = rule.eAllContents(xtext::AbstractElement)->size())])).skipIfOneChild();[else],[/if]
+						[elseif(element.oclAsType(xtext::Keyword).value = '][')]
+		b.isOneOfThem([aGrammar.name.concat('Punctuator').toUpperFirst()/].CORCHETES, [aGrammar.name.concat('Punctuator').toUpperFirst()/].CORCHETES)[if(i = 1)],[elseif(i = rule.eAllContents(xtext::AbstractElement)->size())])).skipIfOneChild();[else],[/if]
+						[elseif(element.oclAsType(xtext::Keyword).value = 'y')]
+		b.isOneOfThem([aGrammar.name.concat('Punctuator').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.toUpper()/], [aGrammar.name.concat('Punctuator').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.toUpper()/])[if(i = 1)],[elseif(i = rule.eAllContents(xtext::AbstractElement)->size())])).skipIfOneChild();[else],[/if]
+						[elseif(element.oclAsType(xtext::Keyword).value = 'o')]
+		b.isOneOfThem([aGrammar.name.concat('Punctuator').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.toUpper()/], [aGrammar.name.concat('Punctuator').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.toUpper()/])[if(i = 1)],[elseif(i = rule.eAllContents(xtext::AbstractElement)->size())])).skipIfOneChild();[else],[/if]
+						[elseif(element.oclAsType(xtext::Keyword).value.contains(' '))]
+		b.isOneOfThem([aGrammar.name.concat('Keyword').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.toUpper().replaceAll(' ', '_')/], [aGrammar.name.concat('Keyword').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.toUpper().replaceAll(' ', '_')/])[if(i = 1)],[elseif(i = rule.eAllContents(xtext::AbstractElement)->size())])).skipIfOneChild();[else],[/if]
+						[elseif(element.oclAsType(xtext::Keyword).value.contains(':'))]
+		b.isOneOfThem([aGrammar.name.concat('Keyword').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.toUpper().replaceAll(':', '')/], [aGrammar.name.concat('Keyword').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.toUpper().replaceAll(':', '')/])[if(i = 1)],[elseif(i = rule.eAllContents(xtext::AbstractElement)->size())])).skipIfOneChild();[else],[/if]
+						[elseif(element.oclAsType(xtext::Keyword).value.contains('/'))]
+		b.isOneOfThem([aGrammar.name.concat('Keyword').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.toUpper().replaceAll('/', '_')/], [aGrammar.name.concat('Keyword').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.toUpper().replaceAll('/', '_')/])[if(i = 1)],[elseif(i = rule.eAllContents(xtext::AbstractElement)->size())])).skipIfOneChild();[else],[/if]
+						[else]
+		b.isOneOfThem([aGrammar.name.concat('Keyword').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.toUpper()/], [aGrammar.name.concat('Keyword').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.toUpper()/])[if(i = 1)],[elseif(i = rule.eAllContents(xtext::AbstractElement)->size())])).skipIfOneChild();[else],[/if]
+						[/if]
+						[/if]
+					[/for]
+				[/for]
+				
+		[comment --- If there aren't alternatives is a group rule./]
+				[else]
+					[comment --- In this case, we caught all elements and processing them./]
+		[if(rule.eAllContents(xtext::Assignment)->size() > 1)]b.sequence([/if]
+					[for(element : AbstractElement | rule.eAllContents(xtext::AbstractElement))]
+						[comment --- Start - First, the KEYWORDS./]
+						[if(element.oclIsKindOf(xtext::Keyword))]
+										[comment --- If his parent is optional, he too/]
+										[if(element.oclAsType(xtext::Keyword).ancestors(xtext::Group)->at(1).cardinality = '?')]
+		b.optional(
+										[/if]
+										[comment --- Rename the special characters./]
+										[if(element.oclAsType(xtext::Keyword).value = '+')]
+		b.isOneOfThem([aGrammar.name.concat('Punctuator').toUpperFirst()/].SUMA, [aGrammar.name.concat('Punctuator').toUpperFirst()/].SUMA)[if(i <> rule.eAllContents(xtext::AbstractElement)->size())][if(element.oclAsType(xtext::Keyword).ancestors(xtext::Group)->at(1).cardinality = '?')])[/if],[/if]
+										[elseif(element.oclAsType(xtext::Keyword).value = '-')]
+		b.isOneOfThem([aGrammar.name.concat('Punctuator').toUpperFirst()/].RESTA, [aGrammar.name.concat('Punctuator').toUpperFirst()/].RESTA)[if(i <> rule.eAllContents(xtext::AbstractElement)->size())][if(element.oclAsType(xtext::Keyword).ancestors(xtext::Group)->at(1).cardinality = '?')])[/if],[/if]
+										[elseif(element.oclAsType(xtext::Keyword).value = '*')]
+		b.isOneOfThem([aGrammar.name.concat('Punctuator').toUpperFirst()/].MULTIPLICACION, [aGrammar.name.concat('Punctuator').toUpperFirst()/].MULTIPLICACION)[if(i <> rule.eAllContents(xtext::AbstractElement)->size())][if(element.oclAsType(xtext::Keyword).ancestors(xtext::Group)->at(1).cardinality = '?')])[/if],[/if]
+										[elseif(element.oclAsType(xtext::Keyword).value = '/')]
+		b.isOneOfThem([aGrammar.name.concat('Punctuator').toUpperFirst()/].DIVISION, [aGrammar.name.concat('Punctuator').toUpperFirst()/].DIVISION)[if(i <> rule.eAllContents(xtext::AbstractElement)->size())][if(element.oclAsType(xtext::Keyword).ancestors(xtext::Group)->at(1).cardinality = '?')])[/if],[/if]
+										[elseif(element.oclAsType(xtext::Keyword).value = '<')]
+		b.isOneOfThem([aGrammar.name.concat('Punctuator').toUpperFirst()/].MENOR, [aGrammar.name.concat('Punctuator').toUpperFirst()/].MENOR)[if(i <> rule.eAllContents(xtext::AbstractElement)->size())][if(element.oclAsType(xtext::Keyword).ancestors(xtext::Group)->at(1).cardinality = '?')])[/if],[/if]
+										[elseif(element.oclAsType(xtext::Keyword).value = '>')]
+		b.isOneOfThem([aGrammar.name.concat('Punctuator').toUpperFirst()/].MAYOR, [aGrammar.name.concat('Punctuator').toUpperFirst()/].MAYOR)[if(i <> rule.eAllContents(xtext::AbstractElement)->size())][if(element.oclAsType(xtext::Keyword).ancestors(xtext::Group)->at(1).cardinality = '?')])[/if],[/if]
+										[elseif(element.oclAsType(xtext::Keyword).value = '<=')]
+ 		b.isOneOfThem([aGrammar.name.concat('Punctuator').toUpperFirst()/].MENOR_IGUAL, [aGrammar.name.concat('Punctuator').toUpperFirst()/].MENOR_IGUAL)[if(i <> rule.eAllContents(xtext::AbstractElement)->size())][if(element.oclAsType(xtext::Keyword).ancestors(xtext::Group)->at(1).cardinality = '?')])[/if],[/if]
+										[elseif(element.oclAsType(xtext::Keyword).value = '>=')]
+  		b.isOneOfThem([aGrammar.name.concat('Punctuator').toUpperFirst()/].MAYOR_IGUAL, [aGrammar.name.concat('Punctuator').toUpperFirst()/].MAYOR_IGUAL)[if(i <> rule.eAllContents(xtext::AbstractElement)->size())][if(element.oclAsType(xtext::Keyword).ancestors(xtext::Group)->at(1).cardinality = '?')])[/if],[/if]
+										[elseif(element.oclAsType(xtext::Keyword).value = '=')]
+		b.isOneOfThem([aGrammar.name.concat('Punctuator').toUpperFirst()/].IGUAL, [aGrammar.name.concat('Punctuator').toUpperFirst()/].IGUAL)[if(i <> rule.eAllContents(xtext::AbstractElement)->size())][if(element.oclAsType(xtext::Keyword).ancestors(xtext::Group)->at(1).cardinality = '?')])[/if],[/if]
+										[elseif(element.oclAsType(xtext::Keyword).value = '<-')]
+		b.isOneOfThem([aGrammar.name.concat('Punctuator').toUpperFirst()/].ASIGNACION, [aGrammar.name.concat('Punctuator').toUpperFirst()/].ASIGNACION)[if(i <> rule.eAllContents(xtext::AbstractElement)->size())][if(element.oclAsType(xtext::Keyword).ancestors(xtext::Group)->at(1).cardinality = '?')])[/if],[/if]
+										[elseif(element.oclAsType(xtext::Keyword).value = '!=')]
+		b.isOneOfThem([aGrammar.name.concat('Punctuator').toUpperFirst()/].DISTINTO, [aGrammar.name.concat('Punctuator').toUpperFirst()/].DISTINTO)[if(i <> rule.eAllContents(xtext::AbstractElement)->size())][if(element.oclAsType(xtext::Keyword).ancestors(xtext::Group)->at(1).cardinality = '?')])[/if],[/if]
+										[elseif(element.oclAsType(xtext::Keyword).value = ')')]
+		b.isOneOfThem([aGrammar.name.concat('Punctuator').toUpperFirst()/].PARENTESIS_DER, [aGrammar.name.concat('Punctuator').toUpperFirst()/].PARENTESIS_DER)[if(i <> rule.eAllContents(xtext::AbstractElement)->size())][if(element.oclAsType(xtext::Keyword).ancestors(xtext::Group)->at(1).cardinality = '?')])[/if],[/if]
+										[elseif(element.oclAsType(xtext::Keyword).value = '(')]
+  		b.isOneOfThem([aGrammar.name.concat('Punctuator').toUpperFirst()/].PARENTESIS_IZQ, [aGrammar.name.concat('Punctuator').toUpperFirst()/].PARENTESIS_IZQ)[if(i <> rule.eAllContents(xtext::AbstractElement)->size())][if(element.oclAsType(xtext::Keyword).ancestors(xtext::Group)->at(1).cardinality = '?')])[/if],[/if]
+										[elseif(element.oclAsType(xtext::Keyword).value = '..')]
+  		b.isOneOfThem([aGrammar.name.concat('Punctuator').toUpperFirst()/].PUNTOS_SUSPENSIVOS, [aGrammar.name.concat('Punctuator').toUpperFirst()/].PUNTOS_SUSPENSIVOS)[if(i <> rule.eAllContents(xtext::AbstractElement)->size())][if(element.oclAsType(xtext::Keyword).ancestors(xtext::Group)->at(1).cardinality = '?')])[/if],[/if]
+										[elseif(element.oclAsType(xtext::Keyword).value = ':')._or(element.oclAsType(xtext::Keyword).value = ': ')]
+		b.isOneOfThem([aGrammar.name.concat('Punctuator').toUpperFirst()/].DOS_PUNTOS, [aGrammar.name.concat('Punctuator').toUpperFirst()/].DOS_PUNTOS)[if(i <> rule.eAllContents(xtext::AbstractElement)->size())][if(element.oclAsType(xtext::Keyword).ancestors(xtext::Group)->at(1).cardinality = '?')])[/if],[/if]
+										[elseif(element.oclAsType(xtext::Keyword).value = '.')]
+		b.isOneOfThem([aGrammar.name.concat('Punctuator').toUpperFirst()/].PUNTO, [aGrammar.name.concat('Punctuator').toUpperFirst()/].PUNTO)[if(i <> rule.eAllContents(xtext::AbstractElement)->size())][if(element.oclAsType(xtext::Keyword).ancestors(xtext::Group)->at(1).cardinality = '?')])[/if],[/if]
+										[elseif(element.oclAsType(xtext::Keyword).value = ',')]
+  		b.isOneOfThem([aGrammar.name.concat('Punctuator').toUpperFirst()/].COMA, [aGrammar.name.concat('Punctuator').toUpperFirst()/].COMA)[if(i <> rule.eAllContents(xtext::AbstractElement)->size())][if(element.oclAsType(xtext::Keyword).ancestors(xtext::Group)->at(1).cardinality = '?')])[/if],[/if]
+										[elseif(element.oclAsType(xtext::Keyword).value = '}')]
+  		b.isOneOfThem([aGrammar.name.concat('Punctuator').toUpperFirst()/].LLAVE_DER, [aGrammar.name.concat('Punctuator').toUpperFirst()/].LLAVE_DER)[if(i <> rule.eAllContents(xtext::AbstractElement)->size())][if(element.oclAsType(xtext::Keyword).ancestors(xtext::Group)->at(1).cardinality = '?')])[/if],[/if]
+										[elseif(element.oclAsType(xtext::Keyword).value = '{')]
+  		b.isOneOfThem([aGrammar.name.concat('Punctuator').toUpperFirst()/].LLAVE_IZQ, [aGrammar.name.concat('Punctuator').toUpperFirst()/].LLAVE_IZQ)[if(i <> rule.eAllContents(xtext::AbstractElement)->size())][if(element.oclAsType(xtext::Keyword).ancestors(xtext::Group)->at(1).cardinality = '?')])[/if],[/if]
+										[elseif(element.oclAsType(xtext::Keyword).value = ']')]
+  		b.isOneOfThem([aGrammar.name.concat('Punctuator').toUpperFirst()/].CORCHETE_DER, [aGrammar.name.concat('Punctuator').toUpperFirst()/].CORCHETE_DER)[if(i <> rule.eAllContents(xtext::AbstractElement)->size())][if(element.oclAsType(xtext::Keyword).ancestors(xtext::Group)->at(1).cardinality = '?')])[/if],[/if]
+										[elseif(element.oclAsType(xtext::Keyword).value = '[')]
+  		b.isOneOfThem([aGrammar.name.concat('Punctuator').toUpperFirst()/].CORCHETE_IZQ, [aGrammar.name.concat('Punctuator').toUpperFirst()/].CORCHETE_IZQ)[if(i <> rule.eAllContents(xtext::AbstractElement)->size())][if(element.oclAsType(xtext::Keyword).ancestors(xtext::Group)->at(1).cardinality = '?')])[/if],[/if]
+										[elseif(element.oclAsType(xtext::Keyword).value = '][')]
+		b.isOneOfThem([aGrammar.name.concat('Punctuator').toUpperFirst()/].CORCHETES, [aGrammar.name.concat('Punctuator').toUpperFirst()/].CORCHETES)[if(i <> rule.eAllContents(xtext::AbstractElement)->size())][if(element.oclAsType(xtext::Keyword).ancestors(xtext::Group)->at(1).cardinality = '?')])[/if],[/if]
+										[elseif(element.oclAsType(xtext::Keyword).value = 'y')]
+		b.isOneOfThem([aGrammar.name.concat('Punctuator').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.toUpper()/], [aGrammar.name.concat('Punctuator').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.toUpper()/])[if(i <> rule.eAllContents(xtext::AbstractElement)->size())][if(element.oclAsType(xtext::Keyword).ancestors(xtext::Group)->at(1).cardinality = '?')])[/if],[/if]
+										[elseif(element.oclAsType(xtext::Keyword).value = 'o')]
+		b.isOneOfThem([aGrammar.name.concat('Punctuator').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.toUpper()/], [aGrammar.name.concat('Punctuator').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.toUpper()/])[if(i <> rule.eAllContents(xtext::AbstractElement)->size())][if(element.oclAsType(xtext::Keyword).ancestors(xtext::Group)->at(1).cardinality = '?')])[/if],[/if]
+										[elseif(element.oclAsType(xtext::Keyword).value.contains(' '))]
+		b.isOneOfThem([aGrammar.name.concat('Keyword').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.toUpper().replaceAll(' ', '_')/], [aGrammar.name.concat('Keyword').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.toUpper().replaceAll(' ', '_')/])[if(i <> rule.eAllContents(xtext::AbstractElement)->size())][if(element.oclAsType(xtext::Keyword).ancestors(xtext::Group)->at(1).cardinality = '?')])[/if],[/if]
+										[elseif(element.oclAsType(xtext::Keyword).value.contains(':'))]
+		b.isOneOfThem([aGrammar.name.concat('Keyword').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.toUpper().replaceAll(':', '')/], [aGrammar.name.concat('Keyword').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.toUpper().replaceAll(':', '')/])[if(i <> rule.eAllContents(xtext::AbstractElement)->size())][if(element.oclAsType(xtext::Keyword).ancestors(xtext::Group)->at(1).cardinality = '?')])[/if],[/if]
+										[else]
+		b.isOneOfThem([aGrammar.name.concat('Keyword').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.toUpper()/], [aGrammar.name.concat('Keyword').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.toUpper()/])[if(i <> rule.eAllContents(xtext::AbstractElement)->size())][if(element.oclAsType(xtext::Keyword).ancestors(xtext::Group)->at(1).cardinality = '?')])[/if],[/if]
+										[/if]
+						[comment --- End KEYWORDS./]
+						[comment --- Start ASSIGNMENTS./]
+						[elseif(element.oclIsKindOf(xtext::Assignment)._or(element.oclIsKindOf(xtext::RuleCall)))]
+							[comment --- If have a Crossreference is a Identifier./]
+							[if(element.oclAsType(xtext::Assignment).eContents(xtext::CrossReference)->size() > 0)]
+								[if(element.oclAsType(xtext::Assignment).operator = '+=')]
+		[comment --- Are identifier of other classes of the metamodel./]
+		b.zeroOrMore(IDENTIFIER)[if(i <> rule.eAllContents(xtext::AbstractElement)->size())],[/if]
+								[/if]
+							[comment --- If is a EString then is a Identifier too./]
+							[elseif(element.oclAsType(xtext::Assignment).terminal.oclAsType(xtext::RuleCall).rule.type.classifier.name = 'EString')]
+								[if(element.oclAsType(xtext::Assignment).operator = '+=')]
+		[comment --- Are identifier of other classes of the metamodel./]
+		b.zeroOrMore(IDENTIFIER)[if(i <> rule.eAllContents(xtext::AbstractElement)->size()-1)],[/if]
+								[else]
+		IDENTIFIER[if(i <> rule.eAllContents(xtext::AbstractElement)->size()-1)],[/if]
+								[/if]
+							[comment --- If is a EInt then is a 'NUMERO' of the lexer./]
+							[elseif(element.oclAsType(xtext::Assignment).terminal.oclAsType(xtext::RuleCall).rule.type.classifier.name.equalsIgnoreCase('EInt'))._or(element.oclAsType(xtext::Assignment).terminal.oclAsType(xtext::RuleCall).rule.type.classifier.name.equalsIgnoreCase('EFloat'))]
+								[if(element.oclAsType(xtext::Assignment).operator = '+=')]
+		b.zeroOrMore(b.isOneOfThem(NUMERO, NUMERO))[if(i <> rule.eAllContents(xtext::AbstractElement)->size())],[/if]
+								[else]
+		b.isOneOfThem(NUMERO, NUMERO)[if(i <> rule.eAllContents(xtext::AbstractElement)->size()-1)],[/if]
+								[/if]
+							[comment --- In this case, is a normal atribute of another class type./]
+							[else]
+								[if(element.oclAsType(xtext::Assignment).operator = '+=')]
+		b.zeroOrMore([element.oclAsType(xtext::Assignment).terminal.oclAsType(xtext::RuleCall).rule.type.classifier.name.toUpper()/])[if(i <> rule.eAllContents(xtext::AbstractElement)->size()-1)],[/if]
+								[else]
+		[element.oclAsType(xtext::Assignment).terminal.oclAsType(xtext::RuleCall).rule.type.classifier.name.toUpper()/][if(i <> rule.eAllContents(xtext::AbstractElement)->size()-1)],[/if]
+								[/if]
+							[/if]
+						[comment --- End ASSIGNMENTS./]
+						[/if]
+					[/for]
+		[if(rule.eAllContents(xtext::Assignment)->size() > 1)])[/if]);
+				[/if]
+			[/if]
+		[lineSeparator()/]
+		[/for]
+	}
+
+}
+[/file]
+
+[file (aGrammar.name.concat('Keyword.java'), false, 'ASCII')]
+package org.sonar.[aGrammar.name/].api;
+
+import com.sonar.sslr.api.AstNode;
+import com.sonar.sslr.api.TokenType;
+import org.sonar.sslr.grammar.GrammarRuleKey;
+
+public enum [aGrammar.name.concat('Keyword')/] implements TokenType, GrammarRuleKey {
+		
+	[for(keyword: String | aGrammar.eAllContents(xtext::Keyword).value.replaceAll('\\(', '')->asSet())]
+		[if((keyword <> ')')._and(
+			keyword <> '//')._and(
+			keyword <> '(')._and(
+			keyword <> '.')._and(
+			keyword <> '=')._and(
+			keyword <> '[')._and(
+			keyword <> ']')._and(
+			keyword <> ': ')._and(
+			keyword <> '][')._and(
+			keyword <> '{')._and(
+			keyword <> '}')._and(
+			keyword <> '<-')._and(
+			keyword <> '"')._and(
+			keyword <> '\'')._and(
+			keyword <> '/*')._and(
+			keyword <> '*/')._and(
+			keyword <> '+')._and(
+			keyword <> '-')._and(
+			keyword <> '*')._and(
+			keyword <> '/')._and(
+			keyword <> '<')._and(
+			keyword <> '>')._and(
+			keyword <> '>=')._and(
+			keyword <> '<=')._and(
+			keyword <> '!=')._and(
+			keyword <> '..')._and(
+			keyword.size() > 1))]
+				[if (keyword.contains(':'))]
+					[if(not(i = aGrammar.eAllContents(xtext::Keyword).value.replaceAll('\\(', '')->asSet()->size()))]
+	[keyword.replaceAll(':', '').toUpper()/]("[keyword/]"),
+					[else]
+	[keyword.replaceAll(':', '').toUpper()/]("[keyword/]");
+					[/if]
+				[elseif(keyword.contains(' '))]
+					[if(not(i = aGrammar.eAllContents(xtext::Keyword).value.replaceAll('\\(', '')->asSet()->size()))]
+	[keyword.replaceAll(' ', '_').toUpper()/]("[keyword/]"),
+					[else]
+	[keyword.replaceAll(' ', '_').toUpper()/]("[keyword/]");
+					[/if]
+				[elseif(keyword.contains('('))]
+					[if(not(i = aGrammar.eAllContents(xtext::Keyword).value.replaceAll('\\(', '')->asSet()->size()))]
+	[keyword.replaceAll('\\(', '').toUpper()/]("[keyword/]"),
+					[else]
+	[keyword.replaceAll('\\(', '').toUpper()/]("[keyword/]");
+					[/if]
+				[elseif(keyword.contains('/'))]
+					[if(not(i = aGrammar.eAllContents(xtext::Keyword).value.replaceAll('\\(', '')->asSet()->size()))]
+	[keyword.replaceAll('/', '_').toUpper()/]("[keyword/]"),
+					[else]
+	[keyword.replaceAll('/', '_').toUpper()/]("[keyword/]");
+					[/if]
+				[else]
+					[if(not(i = aGrammar.eAllContents(xtext::Keyword).value.replaceAll('\\(', '')->asSet()->size()))]
+	[keyword.toUpper()/]("[keyword/]"),
+					[else]
+	[keyword.toUpper()/]("[keyword/]");
+					[/if]
+				[/if]
+		 [/if]
+		 [if(keyword = 'E')]
+	E("E"),
+		 [elseif(keyword = 'S')]
+	S("S"),
+		 [/if]			
+	[/for]
+
+;
+
+  private final String value;
+
+  private [aGrammar.name.concat('Keyword')/](String value) {
+    this.value = value;
+  }
+
+  public String getName() {
+    return name();
+  }
+
+  public String getValue() {
+    return value;
+  }
+
+  public boolean hasToBeSkippedFromAst(AstNode node) {
+    return false;
+  }
+
+  public static String['[]'/] keywordValues() {
+    [aGrammar.name.concat('Keyword')/]['[]'/] keywordsEnum = [aGrammar.name.concat('Keyword')/].values();
+    String['[]'/] keywords = new String['[keywordsEnum.length]'/];
+    for (int i = 0; i < keywords.length; i++) {
+      keywords['[i]'/] = keywordsEnum['[i]'/].getValue();
+    }
+    return keywords;
+  }
+
+}
+[/file]
+
+[file(aGrammar.name.concat('.java'), false, 'UTF-8')]
+package org.sonar.[aGrammar.name/].api;
+
+import com.sonar.sslr.api.Grammar;
+import com.sonar.sslr.api.Rule;
+
+public class [aGrammar.name/] extends Grammar {
+	[for(rule : AbstractRule | aGrammar.rules)]
+	[if(i = aGrammar.rules->size())]
+	public Rule [rule.name.toUpper()/];
+	[else]
+	public Rule [rule.name.toUpper()/];
+	[/if]
+	[/for]
+
+	@Override
+	public Rule getRootRule() {
+		// TODO Auto-generated method stub
+		return CODIGO;
+	}
+}
+
+[/file]
+
+[file (aGrammar.name.concat('Punctuator.java'), false, 'UTF-8')]
+package org.sonar.[aGrammar.name/].api;
+
+import com.sonar.sslr.api.AstNode;
+import com.sonar.sslr.api.TokenType;
+import org.sonar.sslr.grammar.GrammarRuleKey;
+
+public enum [aGrammar.name.concat('Punctuator')/] implements TokenType, GrammarRuleKey {
+
+//Keywords añadidos manualmente para operaciones
+
+[for(keyword: String | aGrammar.eAllContents(xtext::Keyword).value->asSet())]
+			[if(keyword = '+')]
+	SUMA("+"),
+			[elseif(keyword = '-')]
+	RESTA("-"),
+			[elseif(keyword = '*')]
+	MULTIPLICACION("*"),
+			[elseif(keyword = '/')]
+	DIVISION("/"),
+			[elseif(keyword = '<')]
+	MENOR("<"),
+			[elseif(keyword = '>')]
+	MAYOR(">"),
+			[elseif(keyword = '<=')]
+ 	MENOR_IGUAL("<="),
+			[elseif(keyword = '>=')]
+  	MAYOR_IGUAL(">="),
+			[elseif(keyword = '=')]
+	IGUAL("="),
+			[elseif(keyword = '<-')]
+	ASIGNACION("<-"),
+			[elseif(keyword = '!=')]
+	DISTINTO("!="),
+			[elseif(keyword = ')')]
+	PARENTESIS_DER(")"),
+			[elseif(keyword = '(')]
+  	PARENTESIS_IZQ("("),
+			[elseif(keyword = '..')]
+  	PUNTOS_SUSPENSIVOS(".."),
+			[elseif(keyword = ':')]
+	DOS_PUNTOS(":"),
+			[elseif(keyword = '.')]
+	PUNTO("."),
+			[elseif(keyword = ',')]
+  	COMA(","),
+			[elseif(keyword = '}')]
+  	LLAVE_DER("}"),
+			[elseif(keyword = '{')]
+  	LLAVE_IZQ("{"),
+			[elseif(keyword = ']')]
+  	CORCHETE_DER("]"),
+			[elseif(keyword = '[')]
+  	CORCHETE_IZQ("['['/]"),
+			[elseif(keyword = '<-')]
+  	ASIGNACION("<-");
+			[elseif(keyword = 'y')]
+	Y("Y"),
+			[elseif(keyword = 'o')]
+	O("O"),
+			[elseif(keyword = '][')]
+	CORCHETES("]['['/]"),
+			[/if]
+[/for]
+;
+
+  private final String value;
+
+  private [aGrammar.name.concat('Punctuator')/](String word) {
+    this.value = word;
+  }
+
+  public String getName() {
+    return name();
+  }
+
+  public String getValue() {
+    return value;
+  }
+
+  public boolean hasToBeSkippedFromAst(AstNode node) {
+    return false;
+  }
+
+}
+
+[/file]
+
+[else]
+[/if]
+[/template]
