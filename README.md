@@ -1,6 +1,8 @@
 # Xtext2Sonar
 Xtext2Sonar project based on M2T transformation.
 
+http://rnm214.uca.es/fundiv/fundiv-images/uca-logo-c-3.jpg
+
 ## Tutorial (V1.0)
 
 Para poder utilizar la aplicación, en primer lugar, debemos descargar el plug-in encargado de realizar la transformación (Plug-in transformación M2T) y el plug-in encargado de lanzar la ejecución (Plug-in launcher para M2T) proporcionados en la sección de descargas.
