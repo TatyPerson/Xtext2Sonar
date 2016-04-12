@@ -5,7 +5,7 @@ Xtext2Sonar project based on M2T transformation.
 
 Para poder utilizar la aplicación, en primer lugar, debemos descargar el plug-in encargado de realizar la transformación (Plug-in transformación M2T) y el plug-in encargado de lanzar la ejecución (Plug-in launcher para M2T) proporcionados en la sección de descargas.
 
-Posteriormente, ambos plug-ins deben ser colocados en el directorio "plugins" de Eclipse, como se muestra en la siguiente imagen (Xtext2SonarM2T_1.0.0 y Xtext2SonarM2T_launcher_1.0.0).
+Posteriormente, ambos plug-ins deben ser colocados en el directorio "plugins" de Eclipse (Xtext2SonarM2T_1.0.0 y Xtext2SonarM2T_launcher_1.0.0).
 
 Una vez realizado el paso anterior, abrimos Eclipse y nos dirigimos al fichero .xmi dentro del directorio "src-gen" de nuestro proyecto Xtext y hacemos clic derecho. Seguidamente aparecerán una lista de opciones y debemos elegir la última, en este caso:  Acceleo Model to Text > Generate SonarQube Plugin.
 
