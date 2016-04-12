@@ -33,6 +33,7 @@ import org.eclipse.core.resources.IProjectDescription;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
+import org.eclipse.acceleo.common.preference.AcceleoPreferences;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -441,6 +442,7 @@ public class AcceleoGenerateGenerateSonarQubePluginAction extends ActionDelegate
 	 */
 	public void run(IAction action) {
 		if (files != null) {
+			//AcceleoPreferences.switchQueryCache(false);
 			IRunnableWithProgress operation = new IRunnableWithProgress() {
 				public void run(IProgressMonitor monitor) {
 					try {

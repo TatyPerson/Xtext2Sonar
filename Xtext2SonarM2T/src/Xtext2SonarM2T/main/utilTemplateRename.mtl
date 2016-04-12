@@ -1,0 +1,8 @@
+[comment encoding = UTF-8 /]
+[module utilTemplateRename('http://www.eclipse.org/2008/Xtext')]
+
+[import Xtext2SonarM2T::main::utilQueryRename /]
+
+[template public renameKeywordTemplate(keyword : String)]
+	[keyword.renameKeyword()/]
+[/template]

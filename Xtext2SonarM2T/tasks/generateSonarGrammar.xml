@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project default="generateSonarGrammar" name="Xtext2SonarM2T">
     <property name="ECLIPSE_HOME" value="../../../../Desktop/Vary en Git/Eclipse.app/Contents/Eclipse"/>
-    <property name="ECLIPSE_WORKSPACE" value="../.."/>
+    <property name="ECLIPSE_WORKSPACE" value="../../../../Documents/workspaceVaryEnGit"/>
 
     <!-- The classpath with only the dependencies used by the project -->
     <path id="Xtext2SonarM2T.libraryclasspath">
