@@ -1,6 +1,14 @@
 # Xtext2Sonar
 Xtext2Sonar project based on M2T transformation.
 
+## Resumen 
+
+El framework Xtext[https://eclipse.org/Xtext/] permite desarrollar lenguajes específicos de dominio (DSL) aplicados a cualquier tipo de área. La sintaxis de dichos lenguajes (gramática) constituye un nuevo lenguaje, como C, C++ o Java, por ejemplo. Por lo tanto, sería interesante poder medir la calidad de la implementación realizada con dicho nuevo lenguaje. La plataforma de análisis estático de código SonarQube[http://www.sonarqube.org] permite añadir nuevos plug-ins que definan nuevos lenguajes a analizar.
+
+Por lo tanto, el objetivo de este proyecto es realizar una transformación de la gramática implementada en Xtext a la gramática esperada por SonarQube y agilizar el proceso de desarrollo de los plug-ins para esta plataforma.
+
+Slides de presentación del proyecto: https://prezi.com/5ibd5yrzyvzi/
+
 ## Tutorial (V1.0)
 
 Para poder utilizar la aplicación, en primer lugar, debemos descargar el plug-in encargado de realizar la transformación (Plug-in transformación M2T) y el plug-in encargado de lanzar la ejecución (Plug-in launcher para M2T) proporcionados en la sección de descargas.
