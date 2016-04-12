@@ -7,8 +7,6 @@ El framework Xtext[https://eclipse.org/Xtext/] permite desarrollar lenguajes esp
 
 Por lo tanto, el objetivo de este proyecto es realizar una transformación de la gramática implementada en Xtext a la gramática esperada por SonarQube y agilizar el proceso de desarrollo de los plug-ins para esta plataforma.
 
-Slides de presentación del proyecto: https://prezi.com/5ibd5yrzyvzi/
-
 ## Tutorial (V1.0)
 
 Para poder utilizar la aplicación, en primer lugar, debemos descargar el plug-in encargado de realizar la transformación (Plug-in transformación M2T) y el plug-in encargado de lanzar la ejecución (Plug-in launcher para M2T) proporcionados en la sección de descargas.
