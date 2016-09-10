@@ -1,13 +1,17 @@
-/*******************************************************************************
- * Copyright (c) 2008, 2012 Obeo.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors:
- *     Obeo - initial API and implementation
- *******************************************************************************/
+/*Copyright (C) 2016  Tatiana Person Montero
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the Eclipse Public License as published by
+the Eclipse Software Foundation, either version 1 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+Eclipse Public License for more details.
+
+You should have received a copy of the Eclipse Public License
+along with this program.  If not, see <https://www.eclipse.org/legal/epl-v10.html>*/
 package Xtext2SonarM2T.launcher.popupMenus;
 
 import java.io.BufferedReader;

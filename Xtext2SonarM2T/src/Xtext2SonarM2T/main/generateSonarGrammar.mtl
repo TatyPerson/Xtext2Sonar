@@ -1,7 +1,20 @@
 [comment encoding = UTF-8 /]
-[**
- * The documentation of the module generateSonarGrammar.
+[** Copyright (C) 2016  Tatiana Person Montero
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the Eclipse Public License as published by
+the Eclipse Software Foundation, either version 1 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+Eclipse Public License for more details.
+
+You should have received a copy of the Eclipse Public License
+along with this program.  If not, see <https://www.eclipse.org/legal/epl-v10.html>*/
  */]
+
 [module generateSonarGrammar('http://www.eclipse.org/2008/Xtext')]
 [import Xtext2SonarM2T::main::utilTemplateRename /]
 
