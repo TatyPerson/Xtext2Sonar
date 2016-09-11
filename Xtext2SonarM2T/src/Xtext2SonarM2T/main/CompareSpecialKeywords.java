@@ -28,7 +28,8 @@ public class CompareSpecialKeywords {
 	
 	public static boolean noValidCharacters(String keyword) {
 		if(keyword.length() == 1) {
-			return Pattern.matches(patternXtextExpressions, keyword) || Pattern.matches(patternAccents, keyword) || Pattern.matches("\\p{Space}", keyword);
+			return Pattern.matches(patternXtextExpressions, keyword) || Pattern.matches(patternAccents, keyword) 
+					|| Pattern.matches("\\p{Space}", keyword) || Pattern.matches("\\p{Digit}", keyword) || keyword.equals("?");
 		} else {
 			return false;
 		}

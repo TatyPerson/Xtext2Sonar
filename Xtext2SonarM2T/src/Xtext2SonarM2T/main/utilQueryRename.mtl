@@ -5,6 +5,10 @@
     invoke('Xtext2SonarM2T.main.RenameSpecialKeywords', 
 'renameKeyword(java.lang.String)', Sequence{keyword})/]
 
+[query public renameKeywordSimple(keyword: String) : String = 
+    invoke('Xtext2SonarM2T.main.RenameSpecialKeywords', 
+'renameKeywordSimple(java.lang.String)', Sequence{keyword})/]
+
 [query public renameKeywordWithSpecialCharacter(keyword: String) : String = 
     invoke('Xtext2SonarM2T.main.RenameSpecialKeywords', 
 'renameKeywordWithSpecialCharacter(java.lang.String)', Sequence{keyword})/]

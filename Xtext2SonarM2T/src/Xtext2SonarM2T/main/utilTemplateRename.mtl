@@ -7,6 +7,10 @@
 	[keyword.renameKeyword()/]
 [/template]
 
+[template public renameKeywordSimpleTemplate(keyword : String)]
+	[keyword.renameKeywordSimple()/]
+[/template]
+
 [template public renameKeywordWithSpecialCharacterTemplate(keyword : String)]
 	[keyword.renameKeywordWithSpecialCharacter()/]
 [/template]

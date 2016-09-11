@@ -35,6 +35,15 @@ public class RenameSpecialKeywords {
 		}
 	}
 	
+	/**
+	 * Function to convert a keyword in Ascii representation.
+	 * @param keyword.
+	 * @return the renamed keyword.
+	 */
+	public static String renameKeywordSimple(final String keyword) {
+		return "SK" + toAscii(keyword);
+	}
+	
 	//Helper function of renameKeyword function.
 	private static String toAscii(String s){
 	    StringBuilder sb = new StringBuilder();
