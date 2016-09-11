@@ -209,7 +209,7 @@ public enum [aGrammar.name.concat('Impl').toUpperFirst()/] implements GrammarRul
 }
 [/file]
 
-[file (aGrammar.name.concat('Keyword.java'), false, 'ASCII')]
+[file (aGrammar.name.concat('Keyword.java'), false, 'UTF-8')]
 package org.sonar.[aGrammar.name/].api;
 
 import com.sonar.sslr.api.AstNode;
