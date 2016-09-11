@@ -17,6 +17,7 @@ along with this program.  If not, see <https://www.eclipse.org/legal/epl-v10.htm
 
 [module generateSonarGrammar('http://www.eclipse.org/2008/Xtext')]
 [import Xtext2SonarM2T::main::utilTemplateRename /]
+[import Xtext2SonarM2T::main::utilTemplateCompare /]
 
 [**
  * The documentation of the template SonarGrammarImpl.
@@ -319,73 +320,15 @@ import org.sonar.sslr.grammar.GrammarRuleKey;
 
 public enum [aGrammar.name.concat('Keyword')/] implements TokenType, GrammarRuleKey {
 		
-	[for(keyword: String | aGrammar.eAllContents(xtext::Keyword).value.replaceAll('\\(', '')->asSet())]
-		[if((keyword <> ')')._and(
-			keyword <> '//')._and(
-			keyword <> '(')._and(
-			keyword <> '.')._and(
-			keyword <> '=')._and(
-			keyword <> '[')._and(
-			keyword <> ']')._and(
-			keyword <> ': ')._and(
-			keyword <> '][')._and(
-			keyword <> '{')._and(
-			keyword <> '}')._and(
-			keyword <> '<-')._and(
-			keyword <> '"')._and(
-			keyword <> '\'')._and(
-			keyword <> '/*')._and(
-			keyword <> '*/')._and(
-			keyword <> '+')._and(
-			keyword <> '-')._and(
-			keyword <> '*')._and(
-			keyword <> '/')._and(
-			keyword <> '<')._and(
-			keyword <> '>')._and(
-			keyword <> '>=')._and(
-			keyword <> '<=')._and(
-			keyword <> '!=')._and(
-			keyword <> '..')._and(
-			keyword.size() > 1))]
-				[if (keyword.contains(':'))]
-					[if(not(i = aGrammar.eAllContents(xtext::Keyword).value.replaceAll('\\(', '')->asSet()->size()))]
-	[keyword.replaceAll(':', '').toUpper()/]("[keyword/]"),
-					[else]
-	[keyword.replaceAll(':', '').toUpper()/]("[keyword/]");
-					[/if]
-				[elseif(keyword.contains(' '))]
-					[if(not(i = aGrammar.eAllContents(xtext::Keyword).value.replaceAll('\\(', '')->asSet()->size()))]
-	[keyword.replaceAll(' ', '_').toUpper()/]("[keyword/]"),
-					[else]
-	[keyword.replaceAll(' ', '_').toUpper()/]("[keyword/]");
-					[/if]
-				[elseif(keyword.contains('('))]
-					[if(not(i = aGrammar.eAllContents(xtext::Keyword).value.replaceAll('\\(', '')->asSet()->size()))]
-	[keyword.replaceAll('\\(', '').toUpper()/]("[keyword/]"),
-					[else]
-	[keyword.replaceAll('\\(', '').toUpper()/]("[keyword/]");
-					[/if]
-				[elseif(keyword.contains('/'))]
-					[if(not(i = aGrammar.eAllContents(xtext::Keyword).value.replaceAll('\\(', '')->asSet()->size()))]
-	[keyword.replaceAll('/', '_').toUpper()/]("[keyword/]"),
-					[else]
-	[keyword.replaceAll('/', '_').toUpper()/]("[keyword/]");
-					[/if]
-				[else]
-					[if(not(i = aGrammar.eAllContents(xtext::Keyword).value.replaceAll('\\(', '')->asSet()->size()))]
-	[keyword.toUpper()/]("[keyword/]"),
-					[else]
-	[keyword.toUpper()/]("[keyword/]");
-					[/if]
-				[/if]
-		 [/if]
-		 [if(keyword = 'E')]
-	E("E"),
-		 [elseif(keyword = 'S')]
-	S("S"),
-		 [/if]			
+	[for(keyword: String | aGrammar.eAllContents(xtext::Keyword).value->asSet())]
+		[if((keyword.compareKeywordTemplate().contains('false')._and(keyword.noValidCharactersTemplate().contains('false'))))]
+			[if(not(i = aGrammar.eAllContents(xtext::Keyword).value->asSet()->size()))]
+	[keyword.renameKeywordWithSpecialCharacterTemplate().toUpper()/]("[keyword/]"),
+			[else]
+	[keyword.renameKeywordWithSpecialCharacterTemplate().toUpper()/]("[keyword/]");
+			[/if]
+		[/if]		
 	[/for]
-
 ;
 
   private final String value;
@@ -451,59 +394,15 @@ import org.sonar.sslr.grammar.GrammarRuleKey;
 
 public enum [aGrammar.name.concat('Punctuator')/] implements TokenType, GrammarRuleKey {
 
-[for(nameKeyword: String | aGrammar.eAllContents(xtext::Keyword).value->asSet())]
-		[if(nameKeyword = '+')]
-	[nameKeyword.renameKeywordTemplate()/]("+"),
-			[elseif(nameKeyword = '-')]
-	[nameKeyword.renameKeywordTemplate()/]("-"),
-			[elseif(nameKeyword = '*')]
-	[nameKeyword.renameKeywordTemplate()/]("*"),
-			[elseif(nameKeyword = '/')]
-	[nameKeyword.renameKeywordTemplate()/]("/"),
-			[elseif(nameKeyword = '<')]
-	[nameKeyword.renameKeywordTemplate()/]("<"),
-			[elseif(nameKeyword = '>')]
-	[nameKeyword.renameKeywordTemplate()/](">"),
-			[elseif(nameKeyword = '<=')]
- 	[nameKeyword.renameKeywordTemplate()/]("<="),
-			[elseif(nameKeyword = '>=')]
-  	[nameKeyword.renameKeywordTemplate()/](">="),
-			[elseif(nameKeyword = '=')]
-	[nameKeyword.renameKeywordTemplate()/]("="),
-			[elseif(nameKeyword = '<-')]
-	[nameKeyword.renameKeywordTemplate()/]("<-"),
-			[elseif(nameKeyword = '!=')]
-	[nameKeyword.renameKeywordTemplate()/]("!="),
-			[elseif(nameKeyword = ')')]
-	[nameKeyword.renameKeywordTemplate()/](")"),
-			[elseif(nameKeyword = '(')]
-  	[nameKeyword.renameKeywordTemplate()/]("("),
-			[elseif(nameKeyword = '..')]
-  	[nameKeyword.renameKeywordTemplate()/](".."),
-			[elseif(nameKeyword = ':')]
-	[nameKeyword.renameKeywordTemplate()/](":"),
-			[elseif(nameKeyword = '.')]
-	[nameKeyword.renameKeywordTemplate()/]("."),
-			[elseif(nameKeyword = ',')]
-  	[nameKeyword.renameKeywordTemplate()/](","),
-			[elseif(nameKeyword = '}')]
-  	[nameKeyword.renameKeywordTemplate()/]("}"),
-			[elseif(nameKeyword = '{')]
-  	[nameKeyword.renameKeywordTemplate()/]("{"),
-			[elseif(nameKeyword = ']')]
-  	[nameKeyword.renameKeywordTemplate()/]("]"),
-			[elseif(nameKeyword = '[')]
-  	[nameKeyword.renameKeywordTemplate()/]("['['/]"),
-			[elseif(nameKeyword = '<-')]
-  	[nameKeyword.renameKeywordTemplate()/]("<-");
-			[elseif(nameKeyword = 'y')]
-	[nameKeyword.renameKeywordTemplate()/]("Y"),
-			[elseif(nameKeyword = 'o')]
-	[nameKeyword.renameKeywordTemplate()/]("O"),
-			[elseif(nameKeyword = '][')]
-	[nameKeyword.renameKeywordTemplate()/]("]['['/]"),
+	[for(keyword: String | aGrammar.eAllContents(xtext::Keyword).value->asSet())]
+		[if((keyword.compareKeywordTemplate().contains('true')._and(keyword.noValidCharactersTemplate().contains('false'))))]
+			[if(not(i = aGrammar.eAllContents(xtext::Keyword).value->asSet()->size()))]
+	[keyword.renameKeywordTemplate()/],
+			[else]
+	[keyword.renameKeywordTemplate()/];
 			[/if]
-[/for]
+		[/if]		
+	[/for]
 ;
 
   private final String value;

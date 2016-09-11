@@ -6,3 +6,7 @@
 [template public renameKeywordTemplate(keyword : String)]
 	[keyword.renameKeyword()/]
 [/template]
+
+[template public renameKeywordWithSpecialCharacterTemplate(keyword : String)]
+	[keyword.renameKeywordWithSpecialCharacter()/]
+[/template]

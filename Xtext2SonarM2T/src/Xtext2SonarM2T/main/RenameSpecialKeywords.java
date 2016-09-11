@@ -15,15 +15,24 @@ along with this program.  If not, see <https://www.eclipse.org/legal/epl-v10.htm
 
 package Xtext2SonarM2T.main;
 
+import java.util.regex.Pattern;
+
 public class RenameSpecialKeywords {
 	
 	/**
 	 * Function to convert a keyword in Ascii representation.
-	 * @param keyword
-	 * @return the renamed keyword
+	 * @param keyword.
+	 * @return the renamed keyword.
+	 * NOTE: This function helps with the white spaces problem.
 	 */
 	public static String renameKeyword(final String keyword) {
-		return "SK" + toAscii(keyword);
+		if(Pattern.matches("\"", keyword)) {
+			return "SK" + toAscii(keyword) + "(\"" + "\\\"" + "\")";
+		} else if(keyword.equals("\\")) {
+			return "SK" + toAscii(keyword) + "(\"" + "\\\\" + "\")";
+		} else {
+			return "SK" + toAscii(keyword)+ "(\"" + keyword + "\")";
+		}
 	}
 	
 	//Helper function of renameKeyword function.
@@ -36,4 +45,13 @@ public class RenameSpecialKeywords {
 	    
 	    return Long.toString(Long.parseLong(sb.toString()));
     }
+	
+	/**
+	 * Function to delete special characters in keyword.
+	 * @param keyword.
+	 * @return the renamed keyword.
+	 */
+	public static String renameKeywordWithSpecialCharacter(final String keyword) {
+		return keyword.replaceAll("\\p{Punct}", "_").replaceAll("\\p{Space}", "_");
+	}
 }
