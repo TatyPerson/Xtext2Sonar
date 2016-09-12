@@ -38,7 +38,7 @@ public class StringLiteralsChannel extends Channel<Lexer> {
         .setColumn(column)
         .setURI(output.getURI())
         .setValueAndOriginalValue(sb.toString())
-        .setType(NAMETokenType.CADENA)
+        .setType(NAMETokenType.STRING)
         .build());
     sb.setLength(0);
     return true;

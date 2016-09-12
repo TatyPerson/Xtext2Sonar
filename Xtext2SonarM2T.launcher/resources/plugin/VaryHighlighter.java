@@ -62,7 +62,7 @@ public class NAMEHighlighter {
 
   private void highlightNonComments(Highlightable.HighlightingBuilder highlighting, List<Token> tokens, SourceFileOffsets offsets) {
     for (Token token : tokens) {
-      if (NAMETokenType.CADENA.equals(token.getType())) {
+      if (NAMETokenType.STRING.equals(token.getType())) {
         highlight(highlighting, offsets.startOffset(token), offsets.endOffset(token), "s"); // string
       }
       if (isConstant(token.getType())) {
@@ -81,8 +81,8 @@ public class NAMEHighlighter {
   }
 
   private boolean isConstant(TokenType type) {
-    return NAMETokenType.NUMERO.equals(type)
-      || NAMETokenType.CARACTER_.equals(type);
+    return NAMETokenType.NUMBER.equals(type)
+      || NAMETokenType.CHARACTER.equals(type);
   }
 
   private boolean isKeyword(TokenType type) {

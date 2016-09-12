@@ -58,15 +58,15 @@ public final class NAMELexer {
         .withChannel(new StringLiteralsChannel())
 
         // C++ Standard, Section 2.14.4 "Floating literals"
-        .withChannel(regexp(NAMETokenType.NUMERO, "[0-9]++\\.[0-9]*+" + opt(EXP) + opt(FLOAT_SUFFIX)))
-        .withChannel(regexp(NAMETokenType.NUMERO, "\\.[0-9]++" + opt(EXP) + opt(FLOAT_SUFFIX)))
-        .withChannel(regexp(NAMETokenType.NUMERO, "[0-9]++" + EXP + opt(FLOAT_SUFFIX)))
+        .withChannel(regexp(NAMETokenType.NUMBER, "[0-9]++\\.[0-9]*+" + opt(EXP) + opt(FLOAT_SUFFIX)))
+        .withChannel(regexp(NAMETokenType.NUMBER, "\\.[0-9]++" + opt(EXP) + opt(FLOAT_SUFFIX)))
+        .withChannel(regexp(NAMETokenType.NUMBER, "[0-9]++" + EXP + opt(FLOAT_SUFFIX)))
 
         // C++ Standard, Section 2.14.2 "Integer literals"
-        .withChannel(regexp(NAMETokenType.NUMERO, "[1-9][0-9]*+" + opt(INTEGER_SUFFIX))) // Decimal literals
-        .withChannel(regexp(NAMETokenType.NUMERO, "0[0-7]++" + opt(INTEGER_SUFFIX))) // Octal Literals
-        .withChannel(regexp(NAMETokenType.NUMERO, "0[xX][0-9a-fA-F]++" + opt(INTEGER_SUFFIX))) // Hex Literals
-        .withChannel(regexp(NAMETokenType.NUMERO, "0" + opt(INTEGER_SUFFIX))) // Decimal zero
+        .withChannel(regexp(NAMETokenType.NUMBER, "[1-9][0-9]*+" + opt(INTEGER_SUFFIX))) // Decimal literals
+        .withChannel(regexp(NAMETokenType.NUMBER, "0[0-7]++" + opt(INTEGER_SUFFIX))) // Octal Literals
+        .withChannel(regexp(NAMETokenType.NUMBER, "0[xX][0-9a-fA-F]++" + opt(INTEGER_SUFFIX))) // Hex Literals
+        .withChannel(regexp(NAMETokenType.NUMBER, "0" + opt(INTEGER_SUFFIX))) // Decimal zero
 
         // TODO:
         // C++ Standard, Section 2.14.8 "User-defined literals"

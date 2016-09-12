@@ -35,7 +35,7 @@ public class CharacterLiteralsChannel extends Channel<Lexer> {
         .setColumn(column)
         .setURI(output.getURI())
         .setValueAndOriginalValue(sb.toString())
-        .setType(NAMETokenType.CARACTER_)
+        .setType(NAMETokenType.CHARACTER)
         .build());
     sb.setLength(0);
     return true;

@@ -326,7 +326,6 @@ public class AcceleoGenerateGenerateSonarQubePluginAction extends ActionDelegate
 		
 		javaProjectSquid.getPackageFragmentRoot(sourcefolderjavaSquid).createPackageFragment("org.sonar." + name + ".api", false, null);
 		addFileToProject(projectSquid,"resources/squid/VaryMetric.java", "src/main/java/" + "org/sonar/" + name + "/api/" + name + "Metric.java", monitor, name, false);
-		addFileToProject(projectSquid,"resources/squid/VaryTokenType.java", "src/main/java/" + "org/sonar/" + name + "/api/" + name + "TokenType.java", monitor, name, false);
 		
 		javaProjectSquid.getPackageFragmentRoot(sourcefolderjavaSquid).createPackageFragment("org.sonar." + name + ".channels", false, null);
 		addFileToProject(projectSquid,"resources/squid/CharacterLiteralsChannel.java", "src/main/java/" + "org/sonar/" + name + "/channels/CharacterLiteralsChannel.java", monitor, name, false);
