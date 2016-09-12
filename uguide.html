@@ -30,6 +30,30 @@
 </h2>
 
 <HR width=100% align="center">
+  
+<a id="user-content-performing-transformation" class="anchor" href="#performing-transformation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Performing transformation</h3>
+
+<p><strong>1.</strong>First, you must open the Eclipse version with Xtext2Sonar plugin integrated.</p>
+  
+<p><strong>2.</strong>Later, you must add the following sentence in the .mwe2 file of your Xtext project:</p>
+
+<div align="center"><img src="http://wikis.uca.es/wikiPLII/images/b/be/Xmi_mwe2.png" height="10%" width="10%"></div>
+
+<p><strong>3.</strong></p>
+
+Una vez realizado el paso anterior, abrimos Eclipse y nos dirigimos al fichero .xmi dentro del directorio "src-gen" de nuestro proyecto Xtext y hacemos clic derecho. Seguidamente aparecerán una lista de opciones y debemos elegir la última, en este caso: Acceleo Model to Text > Generate SonarQube Plugin.
+
+Posteriormente, obtendremos 5 nuevos proyectos en nuestro workspace.
+
+En un inicio, los proyectos contendrán errores de compilación, ya que no se descargan las dependencias de Maven correctamente, para solucionarlos se debe hacer clic derecho en alguno de ellos y seleccionar la opción: Maven > Update project.
+
+Seguidamente, debemos dirigirnos al workspace y debemos copiar los proyectos terminados en: -plugin, -toolkit, -checks y -squid dentro del proyecto restante. A continuación, desde la terminal debemos situarnos en el proyecto donde acabamos de realizar la copia de los demás y realizar el siguiente comando: mvn package. Este comando generará un archivo .jar dentro del directorio target del proyecto finalizado en -plugin.
+
+Posteriormente, debemos copiar el fichero .jar obtenido en el directorio "plugins" de SonarQube.
+
+A continuación, desde la terminal debemos lanzar la ejecución del servidor de SonarQube mediante el siguiente comando: sonar start. Y seguidamente, debemos ejecutar la orden "sonar-runner" en el directorio del proyecto que queremos analizar. En este caso, analizaremos un fichero del plugin correspondiente al DSL que se ha utilizado como prueba para la transformación.
+
+Finalmente, accediendo a localhost:9000, podremos visualizar la interfaz de la web de SonarQube y observaremos el proyecto analizado.
 
       <footer class="site-footer">
         <span class="site-footer-owner"><a href="https://github.com/TatyPerson/Xtext2Sonar">Xtext2Sonar</a> is maintained by <a href="https://github.com/TatyPerson">TatyPerson</a>.</span>
