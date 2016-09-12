@@ -40,7 +40,7 @@
 
 <div align="center"><img src="http://wikis.uca.es/wikiPLII/images/b/be/Xmi_mwe2.png" height="80%" width="80%"></div>
 
-<p><strong>3.</strong> After performing the previous step and run the mwe2 file, we get a new .xmi file in the src-gen project folder.</p>
+<p><strong>3.</strong> After performing the previous step and run the .mwe2 file, we get a new .xmi file in the src-gen project folder.</p>
 
 <p><strong>4.</strong> Then, we right click the .xml file and choose the "Acceleo Model to Text > Generate SonarQube Plugin" option.</p>
 
@@ -48,7 +48,10 @@
 
 <p><strong>6.</strong> Initially, the projects contain compilation errors because Maven dependencies are not downloaded properly, to fix them we should right-click on any of them and select the "Maven> Update project" option.</p>
 
-Seguidamente, debemos dirigirnos al workspace y debemos copiar los proyectos terminados en: -plugin, -toolkit, -checks y -squid dentro del proyecto restante. A continuación, desde la terminal debemos situarnos en el proyecto donde acabamos de realizar la copia de los demás y realizar el siguiente comando: mvn package. Este comando generará un archivo .jar dentro del directorio target del proyecto finalizado en -plugin.
+<p><strong>7.</strong> Then we must go to the Eclipse workspace and we must copy the projects: -plugin, -toolkit, -checks and -squid within the remaining project. Then, from the terminal we place ourselves in the project that contains the others and perform the "mvn package" command. This command will generate a .jar file within the target folder of -plugin project.</p>
+
+<h3>
+<a id="user-content-testing-sonarqube-plugin" class="anchor" href="#testing-sonarqube-plugin" aria-hidden="true"><span class="octicon octicon-link"></span></a>Testing the SonarQube plug-in</h3>
 
 Posteriormente, debemos copiar el fichero .jar obtenido en el directorio "plugins" de SonarQube.
 
