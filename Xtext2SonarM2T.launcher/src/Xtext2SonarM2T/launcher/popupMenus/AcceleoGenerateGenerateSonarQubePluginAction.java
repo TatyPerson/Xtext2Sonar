@@ -191,43 +191,43 @@ public class AcceleoGenerateGenerateSonarQubePluginAction extends ActionDelegate
 		//========== Copy the basic Java files to the Plugin project
 		IJavaProject javaProjectPlugin = JavaCore.create(projectPlugin);
 		javaProjectPlugin.getPackageFragmentRoot(sourcefolderjavaPlugin).createPackageFragment("org.sonar." + name +".plugin", false, null);
-		addFileToProject(projectPlugin,"resources/plugin/VaryCommonRulesDecorator.java", "src/main/java/" + "org/sonar/" + name + "/plugin/" + name + "CommonRulesDecorator.java", monitor, name, false);
-		addFileToProject(projectPlugin,"resources/plugin/VaryCommonRulesEngine.java", "src/main/java/" + "org/sonar/" + name + "/plugin/" + name + "CommonRulesEngine.java", monitor, name, false);
-		addFileToProject(projectPlugin,"resources/plugin/VaryCpdMapping.java", "src/main/java/" + "org/sonar/" + name + "/plugin/" + name + "CpdMapping.java", monitor, name, false);
-		addFileToProject(projectPlugin,"resources/plugin/VaryDefaultProfile.java", "src/main/java/" + "org/sonar/" + name + "/plugin/" + name + "DefaultProfile.java", monitor, name, false);
-		addFileToProject(projectPlugin,"resources/plugin/VaryLanguage.java", "src/main/java/" + "org/sonar/" + name + "/plugin/" + name + "Language.java", monitor, name, false);
-		addFileToProject(projectPlugin,"resources/plugin/VaryPlugin.java", "src/main/java/" + "org/sonar/" + name + "/plugin/" + name + "Plugin.java", monitor, name, false);
-		addFileToProject(projectPlugin,"resources/plugin/VaryRuleRepository.java", "src/main/java/" + "org/sonar/" + name + "/plugin/" + name + "RuleRepository.java", monitor, name, false);
-		addFileToProject(projectPlugin,"resources/plugin/VaryTokenizer.java", "src/main/java/" + "org/sonar/" + name + "/plugin/" + name + "Tokenizer.java", monitor, name, false);
+		addFileToProject(projectPlugin,"resources/plugin/XCommonRulesDecorator.java", "src/main/java/" + "org/sonar/" + name + "/plugin/" + name + "CommonRulesDecorator.java", monitor, name, false);
+		addFileToProject(projectPlugin,"resources/plugin/XCommonRulesEngine.java", "src/main/java/" + "org/sonar/" + name + "/plugin/" + name + "CommonRulesEngine.java", monitor, name, false);
+		addFileToProject(projectPlugin,"resources/plugin/XCpdMapping.java", "src/main/java/" + "org/sonar/" + name + "/plugin/" + name + "CpdMapping.java", monitor, name, false);
+		addFileToProject(projectPlugin,"resources/plugin/XDefaultProfile.java", "src/main/java/" + "org/sonar/" + name + "/plugin/" + name + "DefaultProfile.java", monitor, name, false);
+		addFileToProject(projectPlugin,"resources/plugin/XLanguage.java", "src/main/java/" + "org/sonar/" + name + "/plugin/" + name + "Language.java", monitor, name, false);
+		addFileToProject(projectPlugin,"resources/plugin/XPlugin.java", "src/main/java/" + "org/sonar/" + name + "/plugin/" + name + "Plugin.java", monitor, name, false);
+		addFileToProject(projectPlugin,"resources/plugin/XRuleRepository.java", "src/main/java/" + "org/sonar/" + name + "/plugin/" + name + "RuleRepository.java", monitor, name, false);
+		addFileToProject(projectPlugin,"resources/plugin/XTokenizer.java", "src/main/java/" + "org/sonar/" + name + "/plugin/" + name + "Tokenizer.java", monitor, name, false);
 		
 		javaProjectPlugin.getPackageFragmentRoot(sourcefolderjavaPlugin).createPackageFragment("org.sonar." + name +".plugin.coverage", false, null);
 		addFileToProject(projectPlugin,"resources/plugin/BullseyeParser.java", "src/main/java/" + "org/sonar/" + name + "/plugin/coverage/BullseyeParser.java", monitor, name, false);
 		addFileToProject(projectPlugin,"resources/plugin/CoberturaParser.java", "src/main/java/" + "org/sonar/" + name + "/plugin/coverage/CoberturaParser.java", monitor, name, false);
 		addFileToProject(projectPlugin,"resources/plugin/CoverageParser.java", "src/main/java/" + "org/sonar/" + name + "/plugin/coverage/CoverageParser.java", monitor, name, false);
-		addFileToProject(projectPlugin,"resources/plugin/VaryCoverageSensor.java", "src/main/java/" + "org/sonar/" + name + "/plugin/coverage/" + name + "CoverageSensor.java", monitor, name, false);
+		addFileToProject(projectPlugin,"resources/plugin/XCoverageSensor.java", "src/main/java/" + "org/sonar/" + name + "/plugin/coverage/" + name + "CoverageSensor.java", monitor, name, false);
 		
 		javaProjectPlugin.getPackageFragmentRoot(sourcefolderjavaPlugin).createPackageFragment("org.sonar." + name +".plugin.externalrules", false, null);
-		addFileToProject(projectPlugin,"resources/plugin/VaryExternalRuleRepository.java", "src/main/java/" + "org/sonar/" + name + "/plugin/externalrules/"+ name + "ExternalRuleRepository.java", monitor, name, false);
-		addFileToProject(projectPlugin,"resources/plugin/VaryExternalRulesSensor.java", "src/main/java/" + "org/sonar/" + name + "/plugin/externalrules/"+ name + "ExternalRulesSensor.java", monitor, name, false);
+		addFileToProject(projectPlugin,"resources/plugin/XExternalRuleRepository.java", "src/main/java/" + "org/sonar/" + name + "/plugin/externalrules/"+ name + "ExternalRuleRepository.java", monitor, name, false);
+		addFileToProject(projectPlugin,"resources/plugin/XExternalRulesSensor.java", "src/main/java/" + "org/sonar/" + name + "/plugin/externalrules/"+ name + "ExternalRulesSensor.java", monitor, name, false);
 		
 		javaProjectPlugin.getPackageFragmentRoot(sourcefolderjavaPlugin).createPackageFragment("org.sonar." + name +".plugin.highlighter", false, null);
 		addFileToProject(projectPlugin,"resources/plugin/SourceFileOffsets.java", "src/main/java/" + "org/sonar/" + name + "/plugin/highlighter/SourceFileOffsets.java", monitor, name, false);
-		addFileToProject(projectPlugin,"resources/plugin/VaryHighlighter.java", "src/main/java/" + "org/sonar/" + name + "/plugin/highlighter/"+ name + "Highlighter.java", monitor, name, false);
+		addFileToProject(projectPlugin,"resources/plugin/XHighlighter.java", "src/main/java/" + "org/sonar/" + name + "/plugin/highlighter/"+ name + "Highlighter.java", monitor, name, false);
 		
 		javaProjectPlugin.getPackageFragmentRoot(sourcefolderjavaPlugin).createPackageFragment("org.sonar." + name +".plugin.squid", false, null);
 		addFileToProject(projectPlugin,"resources/plugin/DependencyAnalyzer.java", "src/main/java/" + "org/sonar/" + name + "/plugin/squid/DependencyAnalyzer.java", monitor, name, false);
 		addFileToProject(projectPlugin,"resources/plugin/DirectoryEdge.java", "src/main/java/" + "org/sonar/" + name + "/plugin/squid/DirectoryEdge.java", monitor, name, false);
 		addFileToProject(projectPlugin,"resources/plugin/DsmSerializer.java", "src/main/java/" + "org/sonar/" + name + "/plugin/squid/DsmSerializer.java", monitor, name, false);
 		addFileToProject(projectPlugin,"resources/plugin/FileEdge.java", "src/main/java/" + "org/sonar/" + name + "/plugin/squid/FileEdge.java", monitor, name, false);
-		addFileToProject(projectPlugin,"resources/plugin/VaryLanguageFootprint.java", "src/main/java/" + "org/sonar/" + name + "/plugin/squid/" + name + "LanguageFootprint.java", monitor, name, false);
-		addFileToProject(projectPlugin,"resources/plugin/VarySquidSensor.java", "src/main/java/" + "org/sonar/" + name + "/plugin/squid/" + name + "SquidSensor.java", monitor, name, false);
+		addFileToProject(projectPlugin,"resources/plugin/XLanguageFootprint.java", "src/main/java/" + "org/sonar/" + name + "/plugin/squid/" + name + "LanguageFootprint.java", monitor, name, false);
+		addFileToProject(projectPlugin,"resources/plugin/XSquidSensor.java", "src/main/java/" + "org/sonar/" + name + "/plugin/squid/" + name + "SquidSensor.java", monitor, name, false);
 		
 		javaProjectPlugin.getPackageFragmentRoot(sourcefolderjavaPlugin).createPackageFragment("org.sonar." + name +".plugin.utils", false, null);
 		addFileToProject(projectPlugin,"resources/plugin/EmptyReportException.java", "src/main/java/" + "org/sonar/" + name + "/plugin/utils/EmptyReportException.java", monitor, name, false);
-		addFileToProject(projectPlugin,"resources/plugin/VaryAbstractRuleRepository.java", "src/main/java/" + "org/sonar/" + name + "/plugin/utils/" + name + "AbstractRuleRepository.java", monitor, name, false);
-		addFileToProject(projectPlugin,"resources/plugin/VaryMetrics.java", "src/main/java/" + "org/sonar/" + name + "/plugin/utils/" + name + "Metrics.java", monitor, name, false);
-		addFileToProject(projectPlugin,"resources/plugin/VaryReportSensor.java", "src/main/java/" + "org/sonar/" + name + "/plugin/utils/" + name + "ReportSensor.java", monitor, name, false);
-		addFileToProject(projectPlugin,"resources/plugin/VaryUtils.java", "src/main/java/" + "org/sonar/" + name + "/plugin/utils/" + name + "Utils.java", monitor, name, false);
+		addFileToProject(projectPlugin,"resources/plugin/XAbstractRuleRepository.java", "src/main/java/" + "org/sonar/" + name + "/plugin/utils/" + name + "AbstractRuleRepository.java", monitor, name, false);
+		addFileToProject(projectPlugin,"resources/plugin/XMetrics.java", "src/main/java/" + "org/sonar/" + name + "/plugin/utils/" + name + "Metrics.java", monitor, name, false);
+		addFileToProject(projectPlugin,"resources/plugin/XReportSensor.java", "src/main/java/" + "org/sonar/" + name + "/plugin/utils/" + name + "ReportSensor.java", monitor, name, false);
+		addFileToProject(projectPlugin,"resources/plugin/XUtils.java", "src/main/java/" + "org/sonar/" + name + "/plugin/utils/" + name + "Utils.java", monitor, name, false);
 		
 		javaProjectPlugin.getPackageFragmentRoot(sourcefolderjavaPlugin).createPackageFragment("org.sonar." + name +".plugin.xunit", false, null);
 		addFileToProject(projectPlugin,"resources/plugin/DefaultResourceFinder.java", "src/main/java/" + "org/sonar/" + name + "/plugin/xunit/DefaultResourceFinder.java", monitor, name, false);
@@ -235,7 +235,7 @@ public class AcceleoGenerateGenerateSonarQubePluginAction extends ActionDelegate
 		addFileToProject(projectPlugin,"resources/plugin/ResourceFinder.java", "src/main/java/" + "org/sonar/" + name + "/plugin/xunit/ResourceFinder.java", monitor, name, false);
 		addFileToProject(projectPlugin,"resources/plugin/TestCase.java", "src/main/java/" + "org/sonar/" + name + "/plugin/xunit/TestCase.java", monitor, name, false);
 		addFileToProject(projectPlugin,"resources/plugin/TestResource.java", "src/main/java/" + "org/sonar/" + name + "/plugin/xunit/TestResource.java", monitor, name, false);
-		addFileToProject(projectPlugin,"resources/plugin/VaryXunitSensor.java", "src/main/java/" + "org/sonar/" + name + "/plugin/xunit/"+ name + "XunitSensor.java", monitor, name, false);
+		addFileToProject(projectPlugin,"resources/plugin/XXunitSensor.java", "src/main/java/" + "org/sonar/" + name + "/plugin/xunit/"+ name + "XunitSensor.java", monitor, name, false);
 		addFileToProject(projectPlugin,"resources/plugin/XunitReportParser.java", "src/main/java/" + "org/sonar/" + name + "/plugin/xunit/XunitReportParser.java", monitor, name, false);
 		
 		javaProjectPlugin.getPackageFragmentRoot(sourcefolderjavaPlugin).createPackageFragment("resources", false, null);
@@ -261,8 +261,8 @@ public class AcceleoGenerateGenerateSonarQubePluginAction extends ActionDelegate
 		//========== Copy the basic Java files to the Toolkit project
 		IJavaProject javaProjectToolkit = JavaCore.create(projectToolkit);
 		javaProjectToolkit.getPackageFragmentRoot(sourcefolderjavaToolkit).createPackageFragment("org.sslr." + name +".toolkit", false, null);
-		addFileToProject(projectToolkit,"resources/toolkit/VaryConfigurationModel.java", "src/main/java/" + "org/sslr/" + name + "/toolkit/" + name + "ConfigurationModel" + ".java", monitor, name, false);
-		addFileToProject(projectToolkit,"resources/toolkit/VaryToolkit.java", "src/main/java/" + "org/sslr/" + name + "/toolkit/" + name + "Toolkit" + ".java", monitor, name, false);
+		addFileToProject(projectToolkit,"resources/toolkit/XConfigurationModel.java", "src/main/java/" + "org/sslr/" + name + "/toolkit/" + name + "ConfigurationModel" + ".java", monitor, name, false);
+		addFileToProject(projectToolkit,"resources/toolkit/XToolkit.java", "src/main/java/" + "org/sslr/" + name + "/toolkit/" + name + "Toolkit" + ".java", monitor, name, false);
 		
 		//MavenProjectBuilder mavenProjectBuilder = new MavenProjectBuilder(pomToModel(projectToolkit.getFullPath() + "/pom.xml"));
 		//MavenProject mavenProject = new MavenProject(pomToModel(projectToolkit.getFullPath() + "/pom.xml"));
@@ -320,12 +320,12 @@ public class AcceleoGenerateGenerateSonarQubePluginAction extends ActionDelegate
 		javaProjectSquid.getPackageFragmentRoot(sourcefolderjavaSquid).createPackageFragment("org.sonar." + name, false, null);
 		addFileToProject(projectSquid,"resources/squid/ProgressAstScanner.java", "src/main/java/" + "org/sonar/" + name + "/ProgressAstScanner.java", monitor, name, false);
 		addFileToProject(projectSquid,"resources/squid/ProgressReport.java", "src/main/java/" + "org/sonar/" + name + "/ProgressReport.java", monitor, name, false);
-		addFileToProject(projectSquid,"resources/squid/VaryAstScanner.java", "src/main/java/" + "org/sonar/" + name + "/" + name + "AstScanner.java", monitor, name, false);
-		addFileToProject(projectSquid,"resources/squid/VaryCommentAnalyser.java", "src/main/java/" + "org/sonar/" + name + "/" + name + "CommentAnalyser.java", monitor, name, false);
-		addFileToProject(projectSquid,"resources/squid/VaryConfiguration.java", "src/main/java/" + "org/sonar/" + name + "/" + name + "Configuration.java", monitor, name, false);
+		addFileToProject(projectSquid,"resources/squid/XAstScanner.java", "src/main/java/" + "org/sonar/" + name + "/" + name + "AstScanner.java", monitor, name, false);
+		addFileToProject(projectSquid,"resources/squid/XCommentAnalyser.java", "src/main/java/" + "org/sonar/" + name + "/" + name + "CommentAnalyser.java", monitor, name, false);
+		addFileToProject(projectSquid,"resources/squid/XConfiguration.java", "src/main/java/" + "org/sonar/" + name + "/" + name + "Configuration.java", monitor, name, false);
 		
 		javaProjectSquid.getPackageFragmentRoot(sourcefolderjavaSquid).createPackageFragment("org.sonar." + name + ".api", false, null);
-		addFileToProject(projectSquid,"resources/squid/VaryMetric.java", "src/main/java/" + "org/sonar/" + name + "/api/" + name + "Metric.java", monitor, name, false);
+		addFileToProject(projectSquid,"resources/squid/XMetric.java", "src/main/java/" + "org/sonar/" + name + "/api/" + name + "Metric.java", monitor, name, false);
 		
 		javaProjectSquid.getPackageFragmentRoot(sourcefolderjavaSquid).createPackageFragment("org.sonar." + name + ".channels", false, null);
 		addFileToProject(projectSquid,"resources/squid/CharacterLiteralsChannel.java", "src/main/java/" + "org/sonar/" + name + "/channels/CharacterLiteralsChannel.java", monitor, name, false);
@@ -333,17 +333,17 @@ public class AcceleoGenerateGenerateSonarQubePluginAction extends ActionDelegate
 		
 		javaProjectSquid.getPackageFragmentRoot(sourcefolderjavaSquid).createPackageFragment("org.sonar." + name + ".lexer", false, null);
 		addFileToProject(projectSquid,"resources/squid/BackslashChannel.java", "src/main/java/" + "org/sonar/" + name + "/lexer/BackslashChannel.java", monitor, name, false);
-		addFileToProject(projectSquid,"resources/squid/VaryLexer.java", "src/main/java/" + "org/sonar/" + name + "/lexer/" + name + "Lexer.java", monitor, name, false);
+		addFileToProject(projectSquid,"resources/squid/XLexer.java", "src/main/java/" + "org/sonar/" + name + "/lexer/" + name + "Lexer.java", monitor, name, false);
 		
 		javaProjectSquid.getPackageFragmentRoot(sourcefolderjavaSquid).createPackageFragment("org.sonar." + name + ".parser", false, null);
-		addFileToProject(projectSquid,"resources/squid/VaryParser.java", "src/main/java/" + "org/sonar/" + name + "/parser/" + name + "Parser.java", monitor, name, false);
+		addFileToProject(projectSquid,"resources/squid/XParser.java", "src/main/java/" + "org/sonar/" + name + "/parser/" + name + "Parser.java", monitor, name, false);
 		
 		javaProjectSquid.getPackageFragmentRoot(sourcefolderjavaSquid).createPackageFragment("org.sonar." + name + ".visitors", false, null);
-		addFileToProject(projectSquid,"resources/squid/VaryCharsetAwareVisitor.java", "src/main/java/" + "org/sonar/" + name + "/visitors/" + name + "CharsetAwareVisitor.java", monitor, name, false);
-		addFileToProject(projectSquid,"resources/squid/VaryCommentLinesVisitor.java", "src/main/java/" + "org/sonar/" + name + "/visitors/" + name + "CommentLinesVisitor.java", monitor, name, false);
-		addFileToProject(projectSquid,"resources/squid/VaryFileVisitor.java", "src/main/java/" + "org/sonar/" + name + "/visitors/" + name + "FileVisitor.java", monitor, name, false);
-		addFileToProject(projectSquid,"resources/squid/VaryLinesOfCodeVisitor.java", "src/main/java/" + "org/sonar/" + name + "/visitors/" + name + "LinesOfCodeVisitor.java", monitor, name, false);
-		addFileToProject(projectSquid,"resources/squid/VaryParseErrorLoggerVisitor.java", "src/main/java/" + "org/sonar/" + name + "/visitors/" + name + "ParseErrorLoggerVisitor.java", monitor, name, false);
+		addFileToProject(projectSquid,"resources/squid/XCharsetAwareVisitor.java", "src/main/java/" + "org/sonar/" + name + "/visitors/" + name + "CharsetAwareVisitor.java", monitor, name, false);
+		addFileToProject(projectSquid,"resources/squid/XCommentLinesVisitor.java", "src/main/java/" + "org/sonar/" + name + "/visitors/" + name + "CommentLinesVisitor.java", monitor, name, false);
+		addFileToProject(projectSquid,"resources/squid/XFileVisitor.java", "src/main/java/" + "org/sonar/" + name + "/visitors/" + name + "FileVisitor.java", monitor, name, false);
+		addFileToProject(projectSquid,"resources/squid/XLinesOfCodeVisitor.java", "src/main/java/" + "org/sonar/" + name + "/visitors/" + name + "LinesOfCodeVisitor.java", monitor, name, false);
+		addFileToProject(projectSquid,"resources/squid/XParseErrorLoggerVisitor.java", "src/main/java/" + "org/sonar/" + name + "/visitors/" + name + "ParseErrorLoggerVisitor.java", monitor, name, false);
 		
 		//----- Copy all projects in the main project : Maven multi module
 		

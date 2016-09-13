@@ -33,8 +33,7 @@ public class NAMEConfigurationModel extends AbstractConfigurationModel {
   ConfigurationProperty charsetProperty = new ConfigurationProperty("Charset", CHARSET_PROPERTY_KEY,
     getPropertyOrDefaultValue(CHARSET_PROPERTY_KEY, "UTF-8"),
     Validators.charsetValidator());
-
-  @Override
+  
   public List<ConfigurationProperty> getProperties() {
     return ImmutableList.of(charsetProperty);
   }
@@ -47,7 +46,7 @@ public class NAMEConfigurationModel extends AbstractConfigurationModel {
   @Override
   public Parser<? extends Grammar> doGetParser() {
     SquidAstVisitorContext<Grammar> context
-      = new SquidAstVisitorContextImpl<>(new SourceProject(""));
+    = new SquidAstVisitorContextImpl<Grammar>(new SourceProject(""));
     return NAMEParser.create(context, getConfiguration());
   }
 
