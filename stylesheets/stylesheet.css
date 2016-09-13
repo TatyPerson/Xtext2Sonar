@@ -59,7 +59,7 @@ a {
   display: inline-block;
   margin-bottom: 1rem;
   color: rgba(232, 255, 255, 0.7);
-   background-color: rgba(0, 169, 178, 0.5);
+   background-color: rgba(0, 169, 178, 0.4);
   border-color: black;
   border-style: solid;
   border-width: 1px;
@@ -70,7 +70,7 @@ a {
 .btn[disabled]:hover {
   color: rgba(255, 255, 255, 0.8);
   text-decoration: none;
-   background-color: rgba(0, 169, 178, 0.5);
+   background-color: rgba(0, 169, 178, 0.4);
   border-color: black;
 }
 
