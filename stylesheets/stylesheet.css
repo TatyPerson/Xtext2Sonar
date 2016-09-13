@@ -27,6 +27,8 @@ a {
   transition: color 0.2s, background-color 0.2s, border-color 0.2s; }
   .btn + .btn {
     margin-left: 1rem; }
+  .btn + .btnDownload {
+    margin-left: 1rem; }
 
 .btn:hover {
   color: rgba(255, 255, 255, 0.8);
