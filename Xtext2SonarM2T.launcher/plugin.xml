@@ -7,7 +7,7 @@
             objectClass="org.eclipse.core.resources.IFile"
             nameFilter="*.xmi*"
             id="Xtext2SonarM2T.launcher.popupMenus.contribution.IFile">
-         <menu id="org.eclipse.acceleo.module.menu" label="Acceleo Model to Text" path="additionsAcceleo">
+         <menu id="org.eclipse.acceleo.module.menu" label="Xtext2Sonar" path="additionsAcceleo">
                <groupMarker name="acceleo"/> 
          </menu>
          <action
