@@ -25,24 +25,25 @@ along with this program.  If not, see <https://www.eclipse.org/legal/epl-v10.htm
 [template public SonarGrammarImpl(aGrammar : Grammar)]
 [comment @main /]
 [if (not aGrammar.name.contains('Terminals'))]
-[file (aGrammar.name.concat('Impl.java'), false, 'UTF-8')]
-package org.sonar.[aGrammar.name/].api;
+[let grammarName: String = aGrammar.name.replaceAll('[a-zA-Z0-9]+\\.', '')]
+[file (grammarName.concat('Impl.java'), false, 'UTF-8')]
+package org.sonar.[grammarName/].api;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.sonar.sslr.api.Grammar;
 import org.sonar.sslr.grammar.GrammarRuleKey;
-import org.sonar.[aGrammar.name/].[aGrammar.name/]Configuration;
+import org.sonar.[grammarName/].[grammarName/]Configuration;
 import org.sonar.sslr.grammar.LexerfulGrammarBuilder;
 import static com.sonar.sslr.api.GenericTokenType.IDENTIFIER;
-import static org.sonar.[aGrammar.name/].api.[aGrammar.name/]TokenType.NUMBER;
-import static org.sonar.[aGrammar.name/].api.[aGrammar.name/]TokenType.STRING;
-import static org.sonar.[aGrammar.name/].api.[aGrammar.name/]TokenType.CHARACTER;
+import static org.sonar.[grammarName/].api.[grammarName/]TokenType.NUMBER;
+import static org.sonar.[grammarName/].api.[grammarName/]TokenType.STRING;
+import static org.sonar.[grammarName/].api.[grammarName/]TokenType.CHARACTER;
 [for(rule : TerminalRule | aGrammar.eAllContents(xtext::TerminalRule))]
-import static org.sonar.[aGrammar.name/].api.[aGrammar.name/]TokenType.[rule.name/];
+import static org.sonar.[grammarName/].api.[grammarName/]TokenType.[rule.name/];
 [/for]
 
-public enum [aGrammar.name.concat('Impl').toUpperFirst()/] implements GrammarRuleKey {
+public enum [grammarName.concat('Impl').toUpperFirst()/] implements GrammarRuleKey {
 	
 	[for (nameRule : String | aGrammar.eAllContents(xtext::ParserRule).name)]
 	[if(not(i = aGrammar.eAllContents(xtext::ParserRule)->size()))]
@@ -52,9 +53,9 @@ public enum [aGrammar.name.concat('Impl').toUpperFirst()/] implements GrammarRul
 	[/if]
 	[/for]
 
-	public static final Logger LOG = LoggerFactory.getLogger("[aGrammar.name.concat('Impl').toUpperFirst()/]");
+	public static final Logger LOG = LoggerFactory.getLogger("[grammarName.concat('Impl').toUpperFirst()/]");
 
-	public static Grammar create([aGrammar.name.concat('Configuration')/] conf) {
+	public static Grammar create([grammarName.concat('Configuration')/] conf) {
 		 LexerfulGrammarBuilder b = LexerfulGrammarBuilder.create();
 
 		 toplevel(b, conf);
@@ -65,7 +66,7 @@ public enum [aGrammar.name.concat('Impl').toUpperFirst()/] implements GrammarRul
 		 return b.buildWithMemoizationOfMatchesForAllRules();
 	}
 
-	private static void toplevel(LexerfulGrammarBuilder b, [aGrammar.name.concat('Configuration')/] conf) {
+	private static void toplevel(LexerfulGrammarBuilder b, [grammarName.concat('Configuration')/] conf) {
 		[comment --- In the top level we define the main rule./]
 		b.rule([aGrammar.rules->at(1).name.toUpper()/]).is([if(aGrammar.rules->at(1).eAllContents(xtext::Alternatives)->size() <> 0)]
 		[comment --- If there are alternatives is a selection rule./]
@@ -141,9 +142,9 @@ public enum [aGrammar.name.concat('Impl').toUpperFirst()/] implements GrammarRul
 		b.firstOf(
 						[/if]		
 						[if(element.oclAsType(xtext::Keyword).value.compareKeywordTemplate().contains('true')._and(element.oclAsType(xtext::Keyword).value.noValidCharactersTemplate().contains('false')))]
-		b.isOneOfThem([aGrammar.name.concat('Punctuator').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.renameKeywordSimpleTemplate()/], [aGrammar.name.concat('Punctuator').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.renameKeywordSimpleTemplate()/])[if(i = 1)],[elseif(i = rule.eAllContents(xtext::AbstractElement)->size())])).skipIfOneChild();[else],[/if]
+		b.isOneOfThem([grammarName.concat('Punctuator').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.renameKeywordSimpleTemplate()/], [grammarName.concat('Punctuator').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.renameKeywordSimpleTemplate()/])[if(i = 1)],[elseif(i = rule.eAllContents(xtext::AbstractElement)->size())])).skipIfOneChild();[else],[/if]
 						[elseif(element.oclAsType(xtext::Keyword).value.compareKeywordTemplate().contains('false')._and(element.oclAsType(xtext::Keyword).value.noValidCharactersTemplate().contains('false')))]
-		b.isOneOfThem([aGrammar.name.concat('Keyword').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.renameKeywordWithSpecialCharacterTemplate().toUpper()/], [aGrammar.name.concat('Keyword').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.renameKeywordWithSpecialCharacterTemplate().toUpper()/])[if(i = 1)],[elseif(i = rule.eAllContents(xtext::AbstractElement)->size())])).skipIfOneChild();[else],[/if]
+		b.isOneOfThem([grammarName.concat('Keyword').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.renameKeywordWithSpecialCharacterTemplate().toUpper()/], [grammarName.concat('Keyword').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.renameKeywordWithSpecialCharacterTemplate().toUpper()/])[if(i = 1)],[elseif(i = rule.eAllContents(xtext::AbstractElement)->size())])).skipIfOneChild();[else],[/if]
 						[/if]
 						[/if]
 					[/for]
@@ -162,9 +163,9 @@ public enum [aGrammar.name.concat('Impl').toUpperFirst()/] implements GrammarRul
 										[/if]
 										[comment --- Rename the special characters./]
 										[if(element.oclAsType(xtext::Keyword).value.compareKeywordTemplate().contains('true')._and(element.oclAsType(xtext::Keyword).value.noValidCharactersTemplate().contains('false')))]
-		b.isOneOfThem([aGrammar.name.concat('Punctuator').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.renameKeywordSimpleTemplate()/], [aGrammar.name.concat('Punctuator').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.renameKeywordSimpleTemplate()/])[if(i <> rule.eAllContents(xtext::AbstractElement)->size())][if(element.oclAsType(xtext::Keyword).ancestors(xtext::Group)->at(1).cardinality = '?')])[/if],[/if]
+		b.isOneOfThem([grammarName.concat('Punctuator').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.renameKeywordSimpleTemplate()/], [grammarName.concat('Punctuator').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.renameKeywordSimpleTemplate()/])[if(i <> rule.eAllContents(xtext::AbstractElement)->size())][if(element.oclAsType(xtext::Keyword).ancestors(xtext::Group)->at(1).cardinality = '?')])[/if],[/if]
 										[elseif(element.oclAsType(xtext::Keyword).value.compareKeywordTemplate().contains('false')._and(element.oclAsType(xtext::Keyword).value.noValidCharactersTemplate().contains('false')))]
-		b.isOneOfThem([aGrammar.name.concat('Keyword').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.renameKeywordWithSpecialCharacterTemplate().toUpper()/], [aGrammar.name.concat('Keyword').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.renameKeywordWithSpecialCharacterTemplate().toUpper()/])[if(i <> rule.eAllContents(xtext::AbstractElement)->size())][if(element.oclAsType(xtext::Keyword).ancestors(xtext::Group)->at(1).cardinality = '?')])[/if],[/if]
+		b.isOneOfThem([grammarName.concat('Keyword').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.renameKeywordWithSpecialCharacterTemplate().toUpper()/], [grammarName.concat('Keyword').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.renameKeywordWithSpecialCharacterTemplate().toUpper()/])[if(i <> rule.eAllContents(xtext::AbstractElement)->size())][if(element.oclAsType(xtext::Keyword).ancestors(xtext::Group)->at(1).cardinality = '?')])[/if],[/if]
 										[/if]
 						[comment --- End KEYWORDS./]
 						[comment --- Start ASSIGNMENTS./]
@@ -211,14 +212,14 @@ public enum [aGrammar.name.concat('Impl').toUpperFirst()/] implements GrammarRul
 }
 [/file]
 
-[file (aGrammar.name.concat('Keyword.java'), false, 'UTF-8')]
-package org.sonar.[aGrammar.name/].api;
+[file (grammarName.concat('Keyword.java'), false, 'UTF-8')]
+package org.sonar.[grammarName/].api;
 
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.TokenType;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 
-public enum [aGrammar.name.concat('Keyword')/] implements TokenType, GrammarRuleKey {
+public enum [grammarName.concat('Keyword')/] implements TokenType, GrammarRuleKey {
 		
 	[for(keyword: String | aGrammar.eAllContents(xtext::Keyword).value->asSet())]
 		[if((keyword.compareKeywordTemplate().contains('false')._and(keyword.noValidCharactersTemplate().contains('false'))))]
@@ -233,7 +234,7 @@ public enum [aGrammar.name.concat('Keyword')/] implements TokenType, GrammarRule
 
   private final String value;
 
-  private [aGrammar.name.concat('Keyword')/](String value) {
+  private [grammarName.concat('Keyword')/](String value) {
     this.value = value;
   }
 
@@ -250,7 +251,7 @@ public enum [aGrammar.name.concat('Keyword')/] implements TokenType, GrammarRule
   }
 
   public static String['[]'/] keywordValues() {
-    [aGrammar.name.concat('Keyword')/]['[]'/] keywordsEnum = [aGrammar.name.concat('Keyword')/].values();
+    [grammarName.concat('Keyword')/]['[]'/] keywordsEnum = [grammarName.concat('Keyword')/].values();
     String['[]'/] keywords = new String['[keywordsEnum.length]'/];
     for (int i = 0; i < keywords.length; i++) {
       keywords['[i]'/] = keywordsEnum['[i]'/].getValue();
@@ -261,13 +262,13 @@ public enum [aGrammar.name.concat('Keyword')/] implements TokenType, GrammarRule
 }
 [/file]
 
-[file(aGrammar.name.concat('.java'), false, 'UTF-8')]
-package org.sonar.[aGrammar.name/].api;
+[file(grammarName.concat('.java'), false, 'UTF-8')]
+package org.sonar.[grammarName/].api;
 
 import com.sonar.sslr.api.Grammar;
 import com.sonar.sslr.api.Rule;
 
-public class [aGrammar.name/] extends Grammar {
+public class [grammarName/] extends Grammar {
 	[for (nameRule : String | aGrammar.eAllContents(xtext::ParserRule).name)]
 	public Rule [nameRule.toUpper()/];
 	[/for]
@@ -280,14 +281,14 @@ public class [aGrammar.name/] extends Grammar {
 }
 [/file]
 
-[file (aGrammar.name.concat('Punctuator.java'), false, 'UTF-8')]
-package org.sonar.[aGrammar.name/].api;
+[file (grammarName.concat('Punctuator.java'), false, 'UTF-8')]
+package org.sonar.[grammarName/].api;
 
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.TokenType;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 
-public enum [aGrammar.name.concat('Punctuator')/] implements TokenType, GrammarRuleKey {
+public enum [grammarName.concat('Punctuator')/] implements TokenType, GrammarRuleKey {
 
 	[for(keyword: String | aGrammar.eAllContents(xtext::Keyword).value->asSet())]
 		[if((keyword.compareKeywordTemplate().contains('true')._and(keyword.noValidCharactersTemplate().contains('false'))))]
@@ -302,7 +303,7 @@ public enum [aGrammar.name.concat('Punctuator')/] implements TokenType, GrammarR
 
   private final String value;
 
-  private [aGrammar.name.concat('Punctuator')/](String word) {
+  private [grammarName.concat('Punctuator')/](String word) {
     this.value = word;
   }
 
@@ -320,14 +321,14 @@ public enum [aGrammar.name.concat('Punctuator')/] implements TokenType, GrammarR
 }
 [/file]
 
-[file (aGrammar.name.concat('TokenType.java'), false, 'UTF-8')]
-package org.sonar.[aGrammar.name/].api;
+[file (grammarName.concat('TokenType.java'), false, 'UTF-8')]
+package org.sonar.[grammarName/].api;
 
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.TokenType;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 
-public enum [aGrammar.name/]TokenType implements TokenType, GrammarRuleKey {
+public enum [grammarName/]TokenType implements TokenType, GrammarRuleKey {
   [for(rule : TerminalRule | aGrammar.eAllContents(xtext::TerminalRule))]
   [rule.name.toUpper()/],
   [/for]
@@ -350,5 +351,6 @@ public enum [aGrammar.name/]TokenType implements TokenType, GrammarRuleKey {
   }
 }
 [/file]
+[/let]
 [/if]
 [/template]

@@ -165,7 +165,7 @@ public class AcceleoGenerateGenerateSonarQubePluginAction extends ActionDelegate
 		this.name = name;
 		
 		//1) sonar-name project
-		String projectMainName = "sonar-" + name.toLowerCase();
+		String projectMainName = "sonar-" + name;
 		IProject projectMain = ResourcesPlugin.getWorkspace().getRoot().getProject(projectMainName);
 		createMavenProject(projectMain, monitor, true);
 		
@@ -173,7 +173,7 @@ public class AcceleoGenerateGenerateSonarQubePluginAction extends ActionDelegate
 		addFileToProject(projectMain,"resources/pom/pomMain.xml", "pom.xml", monitor, name, true);
 		
 		//2) sonar-name-plugin project
-		String projectPluginName = "sonar-" + name.toLowerCase() + "-plugin";
+		String projectPluginName = "sonar-" + name + "-plugin";
 		IProject projectPlugin = ResourcesPlugin.getWorkspace().getRoot().getProject(projectPluginName);
 		createMavenProject(projectPlugin, monitor, false);
 		IFolder sourcefolderPlugin = projectPlugin.getFolder("src/");
@@ -243,7 +243,7 @@ public class AcceleoGenerateGenerateSonarQubePluginAction extends ActionDelegate
 		addFileToProject(projectPlugin,"resources/plugin/external-rule.xml", "src/main/java/" + "resources/external-rule.xml", monitor, name, false);
 		
 		//3) sslr-name-toolkit project
-		String projectToolkitName = "sslr-" + name.toLowerCase() + "-toolkit";
+		String projectToolkitName = "sslr-" + name + "-toolkit";
 		IProject projectToolkit = ResourcesPlugin.getWorkspace().getRoot().getProject(projectToolkitName);
 		createMavenProject(projectToolkit, monitor, false);
 		IFolder sourcefolderToolkit = projectToolkit.getFolder("src");
@@ -268,7 +268,7 @@ public class AcceleoGenerateGenerateSonarQubePluginAction extends ActionDelegate
 		//MavenProject mavenProject = new MavenProject(pomToModel(projectToolkit.getFullPath() + "/pom.xml"));
 		
 		//4) name-checks project
-		String projectChecksName = name.toLowerCase() + "-checks";
+		String projectChecksName = name + "-checks";
 		IProject projectChecks = ResourcesPlugin.getWorkspace().getRoot().getProject(projectChecksName);
 		createMavenProject(projectChecks, monitor, false);
 		IFolder sourcefolderChecks = projectChecks.getFolder("src/");
@@ -300,7 +300,7 @@ public class AcceleoGenerateGenerateSonarQubePluginAction extends ActionDelegate
 		addFileToProject(projectChecks,"resources/checks/CompileIncludePathNotFoundOrInvalid.html", "src/main/resources/" + "org/sonar/l10n/" + name + "/rules/" + name + "/CompileIncludePathNotFoundOrInvalid.html", monitor, name, false);
 		
 		//4) name-squid project
-		String projectSquidName = name.toLowerCase() + "-squid";
+		String projectSquidName = name + "-squid";
 		IProject projectSquid = ResourcesPlugin.getWorkspace().getRoot().getProject(projectSquidName);
 		createMavenProject(projectSquid, monitor, false);
 		IFolder sourcefolderSquid = projectSquid.getFolder("src/");
@@ -461,7 +461,7 @@ public class AcceleoGenerateGenerateSonarQubePluginAction extends ActionDelegate
 									// TODO Auto-generated catch block
 									e.printStackTrace();
 								}
-								String projectSquidName = name.toLowerCase() + "-squid";
+								String projectSquidName = name + "-squid";
 								IProject projectSquid = ResourcesPlugin.getWorkspace().getRoot().getProject(projectSquidName);
 								IContainer target = projectSquid.getFolder("src/main/java/org/sonar/" + name + "/api");
 								//IContainer target = model.getProject().getFolder("src-gen");
