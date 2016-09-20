@@ -88,123 +88,129 @@ public enum [grammarName.concat('Impl').toUpperFirst()/] implements GrammarRuleK
 	}
 
 	private static void generate(LexerfulGrammarBuilder b) {
+		[comment --- First, the Terminal rules./]
+		[for(terminal: TerminalRule | aGrammar.eAllContents(xtext::TerminalRule))]
+		b.rule([terminal.name/]).is([if(terminal.type.classifier.name.equalsIgnoreCase('EString'))]b.isOneOfThem(STRING, STRING)[else]b.isOneOfThem(NUMBER, NUMBER)[/if]);
+		[/for]
 		[comment --- We select the ParserRules because are the rules that define the rule grammar in Xtext./]
 		[for(rule : ParserRule | aGrammar.eAllContents(xtext::ParserRule))]
 			[comment --- We delete the first because is the top rule./]
 			[if(i <> 1)._and(rule.eAllContents(xtext::RuleCall)->size() = 1)._and(rule.name <> 'EString')._and(rule.name <> 'EInt')._and(rule.name <> 'EFloat')]
-			[if(rule.eAllContents(xtext::RuleCall)->at(1).rule.name.equalsIgnoreCase('EString'))]
+				[if(rule.eAllContents(xtext::RuleCall)->at(1).rule.name.equalsIgnoreCase('EString'))]
 		b.rule([rule.name.toUpper()/]).is(b.isOneOfThem(STRING, STRING));
-			[elseif(rule.eAllContents(xtext::RuleCall)->at(1).rule.name.equalsIgnoreCase('EInt')._or(rule.eAllContents(xtext::RuleCall)->at(1).rule.name.equalsIgnoreCase('EFloat')))]
+				[elseif(rule.eAllContents(xtext::RuleCall)->at(1).rule.name.equalsIgnoreCase('EInt')._or(rule.eAllContents(xtext::RuleCall)->at(1).rule.name.equalsIgnoreCase('EFloat')))]
 		b.rule([rule.name.toUpper()/]).is(b.isOneOfThem(NUMBER, NUMBER));
-			[else]
-				[if(rule.eAllContents(xtext::RuleCall)->at(1).rule.oclIsKindOf(xtext::TerminalRule))]
+				[else]
+					[if(rule.eAllContents(xtext::RuleCall)->at(1).rule.oclIsKindOf(xtext::TerminalRule))]
 		b.rule([rule.name.toUpper()/]).is(b.isOneOfThem([rule.eAllContents(xtext::RuleCall)->at(1).rule.name.toUpper()/], [rule.eAllContents(xtext::RuleCall)->at(1).rule.name.toUpper()/]));
-				[else]
+					[else]
 		b.rule([rule.name.toUpper()/]).is([rule.eAllContents(xtext::RuleCall)->at(1).rule.name.toUpper()/]);
+					[/if]
 				[/if]
-			[/if]
 			[elseif(i <> 1)._and(rule.name <> 'EString')._and(rule.name <> 'EInt')._and(rule.name <> 'EFloat')]
-		b.rule([rule.name.toUpper()/]).is([if(rule.eAllContents(xtext::Alternatives)->size() <> 0)]
-		[comment --- If there are alternatives is a selection rule./]
-				[for(alternative : Alternatives | rule.eAllContents(xtext::Alternatives))]
-					[comment --- The alternatives are RuleCall./]
-					[for(element : AbstractElement | rule.eAllContents(xtext::AbstractElement))]
-						[if(element.oclIsKindOf(xtext::RuleCall))]
-							[if(i = 2)]
-						[comment --- types of rule: Rule(Option1 | Option2)/]
-								[if(element.oclAsType(xtext::RuleCall).rule.name.equalsIgnoreCase('EString'))]
-		b.firstOf(b.isOneOfThem(STRING, STRING),
-								[elseif(element.oclAsType(xtext::RuleCall).rule.name.equalsIgnoreCase('EInt')._or(element.oclAsType(xtext::RuleCall).rule.name.equalsIgnoreCase('EFloat')))]
-		b.firstOf(b.isOneOfThem(NUMBER, NUMBER),
-								[else]
-		b.firstOf([element.oclAsType(xtext::RuleCall).rule.name.toUpper()/],
-							[/if]
-							[elseif(i = rule.eAllContents(xtext::AbstractElement)->size())]
-								[if(element.oclAsType(xtext::RuleCall).rule.name.equalsIgnoreCase('EString'))]
-		b.isOneOfThem(STRING, STRING))).skipIfOneChild();
-								[elseif(element.oclAsType(xtext::RuleCall).rule.name.equalsIgnoreCase('EInt')._or(element.oclAsType(xtext::RuleCall).rule.name.equalsIgnoreCase('EFloat')))]
-		b.isOneOfThem(NUMBER, NUMBER))).skipIfOneChild();
-								[else]
-		[element.oclAsType(xtext::RuleCall).rule.name.toUpper()/])).skipIfOneChild();
-							[/if]
-							[else]
-								[if(element.oclAsType(xtext::RuleCall).rule.name.equalsIgnoreCase('EString'))]
-		b.isOneOfThem(STRING, STRING),
-								[elseif(element.oclAsType(xtext::RuleCall).rule.name.equalsIgnoreCase('EInt')._or(element.oclAsType(xtext::RuleCall).rule.name.equalsIgnoreCase('EFloat')))]
-		b.isOneOfThem(NUMBER, NUMBER),
-								[else]
-		[element.oclAsType(xtext::RuleCall).rule.name.toUpper()/],
-								[/if]			
-							[/if]
-						[/if]
-						[if(element.oclIsKindOf(xtext::Keyword))]
-						[if(i = 2)]
-		b.firstOf(
-						[/if]		
-						[if(element.oclAsType(xtext::Keyword).value.compareKeywordTemplate().contains('true')._and(element.oclAsType(xtext::Keyword).value.noValidCharactersTemplate().contains('false')))]
-		b.isOneOfThem([grammarName.concat('Punctuator').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.renameKeywordSimpleTemplate()/], [grammarName.concat('Punctuator').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.renameKeywordSimpleTemplate()/])[if(i = 1)],[elseif(i = rule.eAllContents(xtext::AbstractElement)->size())])).skipIfOneChild();[else],[/if]
-						[elseif(element.oclAsType(xtext::Keyword).value.compareKeywordTemplate().contains('false')._and(element.oclAsType(xtext::Keyword).value.noValidCharactersTemplate().contains('false')))]
-		b.isOneOfThem([grammarName.concat('Keyword').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.renameKeywordWithSpecialCharacterTemplate().toUpper()/], [grammarName.concat('Keyword').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.renameKeywordWithSpecialCharacterTemplate().toUpper()/])[if(i = 1)],[elseif(i = rule.eAllContents(xtext::AbstractElement)->size())])).skipIfOneChild();[else],[/if]
-						[/if]
-						[/if]
-					[/for]
-				[/for]
-				
-		[comment --- If there aren't alternatives is a group rule./]
-				[else]
+				[let size: Integer = rule.eAllContents(xtext::AbstractElement)->size()]
+		b.rule([rule.name.toUpper()/]).is(
+		[comment --- If there are only alternatives is a selection rule./]
+					[if(not((rule.eAllContents(xtext::AbstractElement)->first().oclIsKindOf(xtext::Alternatives))._and(rule.eAllContents(xtext::AbstractElement)->last().ancestors(xtext::Alternatives)->size() <> 0)))._and(rule.eAllContents(xtext::AbstractElement)->size() > 1)]
+		b.sequence([/if]
 					[comment --- In this case, we caught all elements and processing them./]
-		[if(rule.eAllContents(xtext::Assignment)->size() > 1)]b.sequence([/if]
-					[for(element : AbstractElement | rule.eAllContents(xtext::AbstractElement))]
-						[comment --- Start - First, the KEYWORDS./]
-						[if(element.oclIsKindOf(xtext::Keyword))]
-										[comment --- If his parent is optional, he too/]
-										[if(element.oclAsType(xtext::Keyword).ancestors(xtext::Group)->at(1).cardinality = '?')]
+					[for(element : AbstractElement | rule.eAllContents(xtext::AbstractElement))]		
+						[comment --- Start ALTERNATIVES./]
+						[if(element.oclIsKindOf(xtext::Alternatives))]
+							[for(elementAux : AbstractElement | element.eAllContents(xtext::AbstractElement))]
+									[comment --- The alternatives are RuleCall./]
+									[if(i = 1)]
+		b.firstOf([/if]
+									[if(elementAux.oclIsKindOf(xtext::RuleCall))] 
+										[if((i = element.eAllContents(xtext::AbstractElement)->size())._and(rule.eAllContents(xtext::AbstractElement)->last() = elementAux))]
+										[comment --- types of rule: Rule(Option1 | Option2)/]
+											[if(elementAux.oclAsType(xtext::RuleCall).rule.name.equalsIgnoreCase('EString'))]
+		b.isOneOfThem(STRING, STRING)
+											[elseif(elementAux.oclAsType(xtext::RuleCall).rule.name.equalsIgnoreCase('EInt')._or(elementAux.oclAsType(xtext::RuleCall).rule.name.equalsIgnoreCase('EFloat')))]
+		b.isOneOfThem(NUMBER, NUMBER)
+											[else]
+		[elementAux.oclAsType(xtext::RuleCall).rule.name.toUpper()/]
+											[/if]
+										[else]
+											[if(elementAux.oclAsType(xtext::RuleCall).rule.name.equalsIgnoreCase('EString'))]
+		b.isOneOfThem(STRING, STRING)[if(i = 1)],[elseif(i = element.eAllContents(xtext::AbstractElement)->size())]),[else],[/if]
+											[elseif(elementAux.oclAsType(xtext::RuleCall).rule.name.equalsIgnoreCase('EInt')._or(elementAux.oclAsType(xtext::RuleCall).rule.name.equalsIgnoreCase('EFloat')))]
+		b.isOneOfThem(NUMBER, NUMBER)[if(i = 1)],[elseif(i = element.eAllContents(xtext::AbstractElement)->size())]),[else],[/if]
+											[else]
+		[elementAux.oclAsType(xtext::RuleCall).rule.name.toUpper()/][if(i = 1)],[elseif(i = element.eAllContents(xtext::AbstractElement)->size())]),[else],[/if]
+											[/if]			
+										[/if]
+									[comment --- The alternatives are Keywords./]
+								 	[elseif(elementAux.oclIsKindOf(xtext::Keyword))]
+										[if((i = element.eAllContents(xtext::AbstractElement)->size())._and(rule.eAllContents(xtext::AbstractElement)->last() = elementAux))]
+											[if(elementAux.oclAsType(xtext::Keyword).value.compareKeywordTemplate().contains('true')._and(elementAux.oclAsType(xtext::Keyword).value.noValidCharactersTemplate().contains('false')))]
+		b.isOneOfThem([grammarName.concat('Punctuator').toUpperFirst()/].[elementAux.oclAsType(xtext::Keyword).value.renameKeywordSimpleTemplate()/], [grammarName.concat('Punctuator').toUpperFirst()/].[elementAux.oclAsType(xtext::Keyword).value.renameKeywordSimpleTemplate()/])
+											[elseif(elementAux.oclAsType(xtext::Keyword).value.compareKeywordTemplate().contains('false')._and(elementAux.oclAsType(xtext::Keyword).value.noValidCharactersTemplate().contains('false')))]
+		b.isOneOfThem([grammarName.concat('Keyword').toUpperFirst()/].[elementAux.oclAsType(xtext::Keyword).value.renameKeywordWithSpecialCharacterTemplate().toUpper()/], [grammarName.concat('Keyword').toUpperFirst()/].[elementAux.oclAsType(xtext::Keyword).value.renameKeywordWithSpecialCharacterTemplate().toUpper()/])
+											[/if]
+										[else]
+											[if(elementAux.oclAsType(xtext::Keyword).value.compareKeywordTemplate().contains('true')._and(elementAux.oclAsType(xtext::Keyword).value.noValidCharactersTemplate().contains('false')))]
+		b.isOneOfThem([grammarName.concat('Punctuator').toUpperFirst()/].[elementAux.oclAsType(xtext::Keyword).value.renameKeywordSimpleTemplate()/], [grammarName.concat('Punctuator').toUpperFirst()/].[elementAux.oclAsType(xtext::Keyword).value.renameKeywordSimpleTemplate()/])[if(i = 1)],[elseif(i = element.eAllContents(xtext::AbstractElement)->size())]),[else],[/if]
+											[elseif(elementAux.oclAsType(xtext::Keyword).value.compareKeywordTemplate().contains('false')._and(elementAux.oclAsType(xtext::Keyword).value.noValidCharactersTemplate().contains('false')))]
+		b.isOneOfThem([grammarName.concat('Keyword').toUpperFirst()/].[elementAux.oclAsType(xtext::Keyword).value.renameKeywordWithSpecialCharacterTemplate().toUpper()/], [grammarName.concat('Keyword').toUpperFirst()/].[elementAux.oclAsType(xtext::Keyword).value.renameKeywordWithSpecialCharacterTemplate().toUpper()/])[if(i = 1)],[elseif(i = element.eAllContents(xtext::AbstractElement)->size())]),[else],[/if]
+											[/if]
+										[/if]
+									[/if]
+									[if(rule.eAllContents(xtext::AbstractElement)->last() = elementAux)]
+		)).skipIfOneChild();
+									[/if]
+							[/for]
+						[comment --- End ALTERNATIVES./]
+						[comment --- Start KEYWORDS./]
+						[elseif((element.oclIsKindOf(xtext::Keyword))._and(element.ancestors(xtext::Alternatives)->size() = 0))]
+							[comment --- If his parent is optional, he too/]
+							[if(element.oclAsType(xtext::Keyword).ancestors(xtext::Group)->at(1).cardinality = '?')]
 		b.optional(
-										[/if]
-										[comment --- Rename the special characters./]
-										[if(element.oclAsType(xtext::Keyword).value.compareKeywordTemplate().contains('true')._and(element.oclAsType(xtext::Keyword).value.noValidCharactersTemplate().contains('false')))]
-		b.isOneOfThem([grammarName.concat('Punctuator').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.renameKeywordSimpleTemplate()/], [grammarName.concat('Punctuator').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.renameKeywordSimpleTemplate()/])[if(i <> rule.eAllContents(xtext::AbstractElement)->size())][if(element.oclAsType(xtext::Keyword).ancestors(xtext::Group)->at(1).cardinality = '?')])[/if],[/if]
-										[elseif(element.oclAsType(xtext::Keyword).value.compareKeywordTemplate().contains('false')._and(element.oclAsType(xtext::Keyword).value.noValidCharactersTemplate().contains('false')))]
-		b.isOneOfThem([grammarName.concat('Keyword').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.renameKeywordWithSpecialCharacterTemplate().toUpper()/], [grammarName.concat('Keyword').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.renameKeywordWithSpecialCharacterTemplate().toUpper()/])[if(i <> rule.eAllContents(xtext::AbstractElement)->size())][if(element.oclAsType(xtext::Keyword).ancestors(xtext::Group)->at(1).cardinality = '?')])[/if],[/if]
-										[/if]
+							[/if]
+							[comment --- Rename the special characters./]
+							[if(element.oclAsType(xtext::Keyword).value.compareKeywordTemplate().contains('true')._and(element.oclAsType(xtext::Keyword).value.noValidCharactersTemplate().contains('false')))]
+		b.isOneOfThem([grammarName.concat('Punctuator').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.renameKeywordSimpleTemplate()/], [grammarName.concat('Punctuator').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.renameKeywordSimpleTemplate()/])[if(i <> size)][if(element.oclAsType(xtext::Keyword).ancestors(xtext::Group)->at(1).cardinality = '?')])[/if],[/if]
+							[elseif(element.oclAsType(xtext::Keyword).value.compareKeywordTemplate().contains('false')._and(element.oclAsType(xtext::Keyword).value.noValidCharactersTemplate().contains('false')))]
+		b.isOneOfThem([grammarName.concat('Keyword').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.renameKeywordWithSpecialCharacterTemplate().toUpper()/], [grammarName.concat('Keyword').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.renameKeywordWithSpecialCharacterTemplate().toUpper()/])[if(i <> size)][if(element.oclAsType(xtext::Keyword).ancestors(xtext::Group)->at(1).cardinality = '?')])[/if],[/if]
+							[/if]
 						[comment --- End KEYWORDS./]
-						[comment --- Start ASSIGNMENTS./]
-						[elseif(element.oclIsKindOf(xtext::Assignment)._or(element.oclIsKindOf(xtext::RuleCall)))]
+						[comment --- Start RULECALLS./]
+						[elseif(element.oclIsKindOf(xtext::RuleCall)._and(element.ancestors(xtext::Alternatives)->size() = 0))]
 							[comment --- If have a Crossreference is a Identifier./]
-							[if(element.oclAsType(xtext::Assignment).eContents(xtext::CrossReference)->size() > 0)]
-								[if(element.oclAsType(xtext::Assignment).operator = '+=')]
+							[if(element.oclAsType(xtext::RuleCall).ancestors(xtext::Assignment)->at(1).eContents(xtext::CrossReference)->size() > 0)]
+								[if(element.oclAsType(xtext::RuleCall).ancestors(xtext::Assignment)->at(1).operator = '+=')]
 		[comment --- Are identifier of other classes of the metamodel./]
-		b.zeroOrMore(IDENTIFIER)[if(i <> rule.eAllContents(xtext::AbstractElement)->size())],[/if]
+		b.zeroOrMore(IDENTIFIER)[if(i <> size)],[/if]
 								[/if]
 							[comment --- If is a EString then is a Identifier too./]
-							[elseif(element.oclAsType(xtext::Assignment).terminal.oclAsType(xtext::RuleCall).rule.type.classifier.name = 'EString')]
-								[if(element.oclAsType(xtext::Assignment).operator = '+=')]
+						[elseif((element.oclAsType(xtext::RuleCall).rule.type.classifier.name = 'EString')._and(element.ancestors(xtext::Alternatives)->size() = 0))]
+								[if(element.oclAsType(xtext::RuleCall).ancestors(xtext::Assignment)->at(1).operator = '+=')]
 		[comment --- Are identifier of other classes of the metamodel./]
-		b.zeroOrMore(IDENTIFIER)[if(i <> rule.eAllContents(xtext::AbstractElement)->size()-1)],[/if]
+		b.zeroOrMore(IDENTIFIER)[if(i <> size)],[/if]
 								[else]
-		IDENTIFIER[if(i <> rule.eAllContents(xtext::AbstractElement)->size()-1)],[/if]
+		IDENTIFIER[if(i <> size)],[/if]
 								[/if]
 							[comment --- If is a EInt then is a 'NUMERO' of the lexer./]
-							[elseif(element.oclAsType(xtext::Assignment).terminal.oclAsType(xtext::RuleCall).rule.type.classifier.name.equalsIgnoreCase('EInt'))._or(element.oclAsType(xtext::Assignment).terminal.oclAsType(xtext::RuleCall).rule.type.classifier.name.equalsIgnoreCase('EFloat'))]
-								[if(element.oclAsType(xtext::Assignment).operator = '+=')]
-		b.zeroOrMore(b.isOneOfThem(NUMBER, NUMBER))[if(i <> rule.eAllContents(xtext::AbstractElement)->size())],[/if]
+						[elseif((element.oclAsType(xtext::RuleCall).rule.type.classifier.name.equalsIgnoreCase('EInt'))._or(element.oclAsType(xtext::RuleCall).rule.type.classifier.name.equalsIgnoreCase('EFloat'))._and(element.ancestors(xtext::Alternatives)->size() = 0))]
+								[if(element.oclAsType(xtext::RuleCall).ancestors(xtext::Assignment)->at(1).operator = '+=')]
+		b.zeroOrMore(b.isOneOfThem(NUMBER, NUMBER))[if(i <> size)],[/if]
 								[else]
-		b.isOneOfThem(NUMBER, NUMBER)[if(i <> rule.eAllContents(xtext::AbstractElement)->size()-1)],[/if]
+		b.isOneOfThem(NUMBER, NUMBER)[if(i <> size)],[/if]
 								[/if]
 							[comment --- In this case, is a normal atribute of another class type./]
-							[else]
-								[if(element.oclAsType(xtext::Assignment).operator = '+=')]
-		b.zeroOrMore([element.oclAsType(xtext::Assignment).terminal.oclAsType(xtext::RuleCall).rule.type.classifier.name.toUpper()/])[if(i <> rule.eAllContents(xtext::AbstractElement)->size()-1)],[/if]
+						[elseif(element.ancestors(xtext::Alternatives)->size() = 0)]
+								[if(element.oclAsType(xtext::RuleCall).ancestors(xtext::Assignment)->at(1).operator = '+=')]
+		b.zeroOrMore([element.oclAsType(xtext::RuleCall).rule.name.toUpper()/])[if(i <> size)],[/if]
 								[else]
-		[element.oclAsType(xtext::Assignment).terminal.oclAsType(xtext::RuleCall).rule.type.classifier.name.toUpper()/][if(i <> rule.eAllContents(xtext::AbstractElement)->size()-1)],[/if]
+		[element.oclAsType(xtext::RuleCall).rule.name.toUpper()/][if(i <> size)],[/if]
 								[/if]
 							[/if]
-						[comment --- End ASSIGNMENTS./]
+						[comment --- End RULECALLS./]
 						[/if]
 					[/for]
-		[if(rule.eAllContents(xtext::Assignment)->size() > 1)])[/if]);
+		[if((rule.eAllContents(xtext::AbstractElement)->size() > 1)._and(rule.eAllContents(xtext::AbstractElement)->last().ancestors(xtext::Alternatives)->size() = 0))]));[elseif(rule.eAllContents(xtext::AbstractElement)->size() = 1)]);[/if]
+					[/let]
 				[/if]
-			[/if]
 		[lineSeparator()/]
 		[/for]
 	}
@@ -348,6 +354,98 @@ public enum [grammarName/]TokenType implements TokenType, GrammarRuleKey {
 
   public boolean hasToBeSkippedFromAst(AstNode node) {
     return false;
+  }
+}
+[/file]
+[file(grammarName.concat('AstScanner.java'), false, 'UTF-8')]
+package org.sonar.[grammarName/].api;
+
+import com.sonar.sslr.api.Grammar;
+import com.sonar.sslr.impl.Parser;
+
+import org.sonar.[grammarName/].visitors.[grammarName/]CharsetAwareVisitor;
+import org.sonar.[grammarName/].visitors.[grammarName/]FileVisitor;
+import org.sonar.[grammarName/].[grammarName/]CommentAnalyser;
+import org.sonar.[grammarName/].[grammarName/]Configuration;
+import org.sonar.[grammarName/].parser.[grammarName/]Parser;
+import org.sonar.squidbridge.AstScanner;
+import org.sonar.squidbridge.SquidAstVisitor;
+import org.sonar.squidbridge.SquidAstVisitorContextImpl;
+import org.sonar.squidbridge.api.SourceCode;
+import org.sonar.squidbridge.api.SourceFile;
+import org.sonar.squidbridge.api.SourceProject;
+import org.sonar.squidbridge.indexer.QueryByType;
+import org.sonar.squidbridge.metrics.CommentsVisitor;
+import org.sonar.squidbridge.metrics.CounterVisitor;
+import org.sonar.squidbridge.metrics.LinesOfCodeVisitor;
+import org.sonar.squidbridge.metrics.LinesVisitor;
+
+import java.io.File;
+import java.util.Collection;
+
+public final class [grammarName/]AstScanner {
+
+  private [grammarName/]AstScanner() {}
+
+  /**
+   * Helper method for testing checks without having to deploy them on a Sonar instance.
+   */
+  public static SourceFile scanSingleFileConfig(File file, [grammarName/]Configuration [grammarName/]Config, SquidAstVisitor<Grammar>... visitors) {
+	    if (!file.isFile()) {
+	      throw new IllegalArgumentException("File '" + file + "' not found.");
+	    }
+	    AstScanner<Grammar> scanner = create([grammarName/]Config, visitors);
+	    scanner.scanFile(file);
+	    Collection<SourceCode> sources = scanner.getIndex().search(new QueryByType(SourceFile.class));
+	    if (sources.size() != 1) {
+	      throw new IllegalStateException("Only one SourceFile was expected whereas " + sources.size() + " has been returned.");
+	    }
+	    return (SourceFile) sources.iterator().next();
+  }
+
+  public static AstScanner<Grammar> create([grammarName/]Configuration conf, SquidAstVisitor<Grammar>... visitors) {
+	final SquidAstVisitorContextImpl<Grammar> context = new SquidAstVisitorContextImpl<Grammar>(new SourceProject("[grammarName/] Project"));;
+    final Parser<Grammar> parser = [grammarName/]Parser.create(/*context, conf*/);
+
+    AstScanner.Builder<Grammar> builder = AstScanner.<Grammar> builder(context).setBaseParser(parser);
+
+    /* Metrics */
+    builder.withMetrics([grammarName/]Metric.values());
+
+    /* Comments */
+    builder.setCommentAnalyser(new [grammarName/]CommentAnalyser());
+
+    /* Files */
+    builder.setFilesMetric([grammarName/]Metric.FILES);
+
+    /* Functions */
+    builder.withSquidAstVisitor(CounterVisitor.<Grammar> builder()
+            .setMetricDef([grammarName/]Metric.FUNCTIONS)
+            /*.subscribeTo(TO COMPLETE WITH THE FUNCTION RULES BY THE FINAL USER) */
+            .build());
+
+    /* Metrics */
+    builder.withSquidAstVisitor(new LinesVisitor<Grammar>([grammarName/]Metric.LINES));
+    builder.withSquidAstVisitor(new LinesOfCodeVisitor<Grammar>([grammarName/]Metric.LINES_OF_CODE));
+    builder.withSquidAstVisitor(CommentsVisitor.<Grammar>builder().withCommentMetric(
+    	      [grammarName/]Metric.COMMENT_LINES)
+    	      .withNoSonar(true)
+    	      /*.withIgnoreHeaderComment(conf.getIgnoreHeaderComments())*/.build());
+    builder.withSquidAstVisitor(CounterVisitor.<Grammar> builder()
+        .setMetricDef([grammarName/]Metric.STATEMENTS)
+        /*.subscribeTo(TO COMPLETE WITH THE STATEMENT RULES BY THE FINAL USER) */
+        .build());
+    
+    builder.withSquidAstVisitor(new [grammarName/]FileVisitor<Grammar>(context));
+    //builder.withSquidAstVisitor(new [grammarName/]ComplexityVisitor<Grammar>(context));
+
+    for (SquidAstVisitor<Grammar> visitor : visitors) {
+        if (visitor instanceof [grammarName/]CharsetAwareVisitor) {
+            (([grammarName/]CharsetAwareVisitor) visitor).setCharset(conf.getCharset());
+          }
+        builder.withSquidAstVisitor(visitor);
+    }
+    return builder.build();
   }
 }
 [/file]

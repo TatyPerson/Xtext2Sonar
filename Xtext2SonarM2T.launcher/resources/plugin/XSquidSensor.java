@@ -30,7 +30,7 @@ import org.sonar.api.measures.PersistenceMode;
 import org.sonar.api.measures.RangeDistributionBuilder;
 import org.sonar.api.resources.Project;
 import org.sonar.NAME.checks.CompileIncludePathNotFoundOrInvalid;
-import org.sonar.NAME.NAMEAstScanner;
+import org.sonar.NAME.api.NAMEAstScanner;
 import org.sonar.NAME.NAMEConfiguration;
 import org.sonar.NAME.api.NAMEMetric;
 import org.sonar.NAME.checks.CheckList;

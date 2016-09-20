@@ -32,7 +32,7 @@ import org.sonar.api.resources.Project;
 import org.sonar.api.utils.ParsingUtils;
 import org.sonar.api.utils.SonarException; //@todo: deprecated, see http://javadocs.sonarsource.org/4.5.2/apidocs/deprecated-list.html
 import org.sonar.api.utils.StaxParser;
-import org.sonar.NAME.NAMEAstScanner;
+import org.sonar.NAME.api.NAMEAstScanner;
 import org.sonar.NAME.NAMEConfiguration;
 import org.sonar.NAME.plugin.NAMELanguage;
 import org.sonar.NAME.plugin.NAMEPlugin;
