@@ -29,14 +29,14 @@ public class NAMECoverageSensor extends NAMEReportSensor {
     UT_COVERAGE, IT_COVERAGE, OVERALL_COVERAGE
   }
 
-  public static final String REPORT_PATH_KEY = "sonar.NAME.coverage.reportPath";
-  public static final String IT_REPORT_PATH_KEY = "sonar.NAME.coverage.itReportPath";
-  public static final String OVERALL_REPORT_PATH_KEY = "sonar.NAME.coverage.overallReportPath";
+  public static final String REPORT_PATH_KEY = "sonar.LOWER.coverage.reportPath";
+  public static final String IT_REPORT_PATH_KEY = "sonar.LOWER.coverage.itReportPath";
+  public static final String OVERALL_REPORT_PATH_KEY = "sonar.LOWER.coverage.overallReportPath";
   private static final String DEFAULT_REPORT_PATH = "coverage-reports/coverage-*.xml";
   private static final String IT_DEFAULT_REPORT_PATH = "coverage-reports/it-coverage-*.xml";
   private static final String OVERALL_DEFAULT_REPORT_PATH = "coverage-reports/overall-coverage-*.xml";
 
-  public static final String FORCE_ZERO_COVERAGE_KEY = "sonar.NAME.coverage.forceZeroCoverage";
+  public static final String FORCE_ZERO_COVERAGE_KEY = "sonar.LOWER.coverage.forceZeroCoverage";
 
   private static List<CoverageParser> parsers = new LinkedList<CoverageParser>();
     private final ProjectReactor reactor;

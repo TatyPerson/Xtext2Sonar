@@ -17,6 +17,7 @@ import org.sonar.squidbridge.annotations.Tags;
   key = "FileComplexity",
   name = "Files should not be too complex",
   tags = {Tags.BRAIN_OVERLOAD},
+  description = "Verifies that the file not be too complex.",
   priority = Priority.MAJOR)
 //@ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNIT_TESTABILITY)

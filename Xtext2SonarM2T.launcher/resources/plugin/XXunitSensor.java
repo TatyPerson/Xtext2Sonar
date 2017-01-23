@@ -50,9 +50,9 @@ import org.sonar.api.batch.bootstrap.ProjectReactor;
  * {@inheritDoc}
  */
 public class NAMEXunitSensor extends NAMEReportSensor {
-  public static final String REPORT_PATH_KEY = "sonar.NAME.xunit.reportPath";
-  public static final String XSLT_URL_KEY = "sonar.NAME.xunit.xsltURL";
-  public static final String PROVIDE_DETAILS_KEY = "sonar.NAME.xunit.provideDetails";
+  public static final String REPORT_PATH_KEY = "sonar.LOWER.xunit.reportPath";
+  public static final String XSLT_URL_KEY = "sonar.LOWER.xunit.xsltURL";
+  public static final String PROVIDE_DETAILS_KEY = "sonar.LOWER.xunit.provideDetails";
 
   private static final String DEFAULT_REPORT_PATH = "xunit-reports/xunit-result-*.xml";
   private static final double PERCENT_BASE = 100d;

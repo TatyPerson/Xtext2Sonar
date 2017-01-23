@@ -24,7 +24,7 @@ import org.sonar.NAME.plugin.utils.NAMEUtils;
  */
 public class NAMEExternalRulesSensor extends NAMEReportSensor {
 
-  public static final String REPORT_PATH_KEY = "sonar.NAME.other.reportPath";
+  public static final String REPORT_PATH_KEY = "sonar.LOWER.other.reportPath";
   private static final String DEFAULT_REPORT_PATH = "externalrules-reports/externalrules-result-*.xml";
   private final RulesProfile profile;
 

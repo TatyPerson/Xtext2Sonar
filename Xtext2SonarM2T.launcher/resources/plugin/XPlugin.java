@@ -21,7 +21,7 @@ import com.google.common.collect.ImmutableList;
  */
 public final class NAMEPlugin extends SonarPlugin {
   static final String SOURCE_FILE_SUFFIXES_KEY = "sonar.LOWER.suffixes.sources";
-  public static final String FILE_SUFFIXES_DEFVALUE = ".p,.ep";
+  public static final String FILE_SUFFIXES_DEFVALUE = ".LOWER";
   public static final String HEADER_FILE_SUFFIXES_KEY = "sonar.LOWER.suffixes.headers";
   public static final String DEFINES_KEY = "sonar.LOWER.defines";  
   public static final String INCLUDE_DIRECTORIES_KEY = "sonar.LOWER.includeDirectories";

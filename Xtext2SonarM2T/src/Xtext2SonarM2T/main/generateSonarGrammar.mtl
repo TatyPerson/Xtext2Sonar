@@ -40,16 +40,21 @@ import static org.sonar.[grammarName/].api.[grammarName/]TokenType.NUMBER;
 import static org.sonar.[grammarName/].api.[grammarName/]TokenType.STRING;
 import static org.sonar.[grammarName/].api.[grammarName/]TokenType.CHARACTER;
 [for(rule : TerminalRule | aGrammar.eAllContents(xtext::TerminalRule))]
+ 	[if((rule.name.toUpper().equalsIgnoreCase('NUMBER') <> true)._and(rule.name.toUpper().equalsIgnoreCase('STRING') <> true)._and(rule.name.toUpper().equalsIgnoreCase('CHARACTER') <> true))]
 import static org.sonar.[grammarName/].api.[grammarName/]TokenType.[rule.name/];
+	[/if]
 [/for]
 
 public enum [grammarName.concat('Impl').toUpperFirst()/] implements GrammarRuleKey {
 	
 	[for (nameRule : String | aGrammar.eAllContents(xtext::ParserRule).name)]
-	[if(not(i = aGrammar.eAllContents(xtext::ParserRule)->size()))]
+	[comment The nameRule is not a name of TokenRule /]
+	 [if((nameRule.toUpper().equalsIgnoreCase('NUMBER') <> true)._and(nameRule.toUpper().equalsIgnoreCase('STRING') <> true)._and(nameRule.toUpper().equalsIgnoreCase('CHARACTER') <> true))]
+		[if(not(i = aGrammar.eAllContents(xtext::ParserRule)->size()))]
 	[nameRule.toUpper()/],
-	[else]
+		[else]
 	[nameRule.toUpper()/];
+		[/if]
 	[/if]
 	[/for]
 
@@ -84,21 +89,47 @@ public enum [grammarName.concat('Impl').toUpperFirst()/] implements GrammarRuleK
 			[/for]
 		[/for]
 		[comment --- If there aren't alternatives is a group rule./]
-		[/if]
+		[elseif(aGrammar.rules->at(1).eAllContents(xtext::Group)->size() <> 0)]
+			[for(group: Group | aGrammar.rules->at(1).eAllContents(xtext::Group))]
+				[let size: Integer = group.eAllContents(xtext::AbstractElement)->size()]
+				[for(element : AbstractElement | group.eAllContents(xtext::AbstractElement))]
+					[if(group.eAllContents(xtext::Action)->size() <> 0)] [comment --- If there are Action rule then the second is a RuleCall normally./]
+					[comment --- Start RULECALLS./]
+						[if(element.oclAsType(xtext::RuleCall).ancestors(xtext::Assignment)->at(1).eContents(xtext::CrossReference)->size() > 0)]
+							[if(element.oclAsType(xtext::RuleCall).ancestors(xtext::Assignment)->at(1).operator = '+=')]
+		[comment --- Are identifier of other classes of the metamodel./]
+		b.zeroOrMore(IDENTIFIER)[if(i <> size)],[/if]
+							[else]
+		IDENTIFIER[if(i <> size)],[/if]
+							[/if]
+						[else]
+							[if(element.oclAsType(xtext::RuleCall).ancestors(xtext::Assignment)->at(1).operator = '+=')]
+		b.zeroOrMore([element.oclAsType(xtext::RuleCall).rule.name.toUpper()/])[if(i <> size)],[/if]
+							[else]
+		[element.oclAsType(xtext::RuleCall).rule.name.toUpper()/][if(i <> size)],[/if]
+							[/if]
+						[/if]
+					[/if]
+				[comment --- End RULECALLS./]
+				[/for]
+				[/let]
+			[/for]
+		);
+		[/if] 
 	}
 
 	private static void generate(LexerfulGrammarBuilder b) {
 		[comment --- First, the Terminal rules./]
-		[for(terminal: TerminalRule | aGrammar.eAllContents(xtext::TerminalRule))]
-		b.rule([terminal.name/]).is([if(terminal.type.classifier.name.equalsIgnoreCase('EString'))]b.isOneOfThem(STRING, STRING)[else]b.isOneOfThem(NUMBER, NUMBER)[/if]);
+		[for(terminal: TerminalRule | aGrammar.eAllContents(xtext::TerminalRule))] [comment The terminal ID of Xtext is changed for com.sonar.sslr.api.GenericTokenType.IDENTIFIER./]
+		b.rule([terminal.name/]).is([if((terminal.type.classifier.name = 'EString')._and(terminal.name = 'ID'))]b.firstOf(b.isOneOfThem(com.sonar.sslr.api.GenericTokenType.IDENTIFIER, com.sonar.sslr.api.GenericTokenType.IDENTIFIER),"|", ".")[elseif((terminal.type.classifier.name = 'EString')._and(terminal.name <> 'ID'))]b.isOneOfThem(STRING, STRING)[else]b.isOneOfThem(NUMBER, NUMBER)[/if]);
 		[/for]
 		[comment --- We select the ParserRules because are the rules that define the rule grammar in Xtext./]
 		[for(rule : ParserRule | aGrammar.eAllContents(xtext::ParserRule))]
-			[comment --- We delete the first because is the top rule./]
-			[if(i <> 1)._and(rule.eAllContents(xtext::RuleCall)->size() = 1)._and(rule.name <> 'EString')._and(rule.name <> 'EInt')._and(rule.name <> 'EFloat')]
-				[if(rule.eAllContents(xtext::RuleCall)->at(1).rule.name.equalsIgnoreCase('EString'))]
+			[comment --- We ignore the first because is the top rule./]
+			[if(i <> 1)._and(rule.eAllContents(xtext::RuleCall)->size() = 1)._and(rule.eAllContents(xtext::Keyword)->size() = 0)._and(rule.name.toUpper() <> 'ESTRING')._and(rule.name.toUpper() <> 'EINT')._and(rule.name.toUpper() <> 'EFLOAT')]
+				[if(rule.eAllContents(xtext::RuleCall)->at(1).rule.name.toUpper() = 'ESTRING')]
 		b.rule([rule.name.toUpper()/]).is(b.isOneOfThem(STRING, STRING));
-				[elseif(rule.eAllContents(xtext::RuleCall)->at(1).rule.name.equalsIgnoreCase('EInt')._or(rule.eAllContents(xtext::RuleCall)->at(1).rule.name.equalsIgnoreCase('EFloat')))]
+				[elseif((rule.eAllContents(xtext::RuleCall)->at(1).rule.name.toUpper() = 'EINT')._or(rule.eAllContents(xtext::RuleCall)->at(1).rule.name.toUpper() = 'EFLOAT'))]
 		b.rule([rule.name.toUpper()/]).is(b.isOneOfThem(NUMBER, NUMBER));
 				[else]
 					[if(rule.eAllContents(xtext::RuleCall)->at(1).rule.oclIsKindOf(xtext::TerminalRule))]
@@ -107,14 +138,14 @@ public enum [grammarName.concat('Impl').toUpperFirst()/] implements GrammarRuleK
 		b.rule([rule.name.toUpper()/]).is([rule.eAllContents(xtext::RuleCall)->at(1).rule.name.toUpper()/]);
 					[/if]
 				[/if]
-			[elseif(i <> 1)._and(rule.name <> 'EString')._and(rule.name <> 'EInt')._and(rule.name <> 'EFloat')]
+			[elseif(i <> 1)._and(rule.name.toUpper() <> 'ESTRING')._and(rule.name.toUpper() <> 'EINT')._and(rule.name.toUpper() <> 'EFLOAT')]
 				[let size: Integer = rule.eAllContents(xtext::AbstractElement)->size()]
 		b.rule([rule.name.toUpper()/]).is(
 		[comment --- If there are only alternatives is a selection rule./]
-					[if(not((rule.eAllContents(xtext::AbstractElement)->first().oclIsKindOf(xtext::Alternatives))._and(rule.eAllContents(xtext::AbstractElement)->last().ancestors(xtext::Alternatives)->size() <> 0)))._and(rule.eAllContents(xtext::AbstractElement)->size() > 1)]
+					[if(not((rule.eAllContents(xtext::AbstractElement)->first().oclIsKindOf(xtext::Alternatives))._and(rule.eAllContents(xtext::AbstractElement)->last().ancestors(xtext::Alternatives)->size() <> 0)))._and(rule.eAllContents(xtext::AbstractElement)->size() > 1)._and(not((rule.eAllContents(xtext::AbstractElement)->at(2).oclIsKindOf(xtext::Alternatives)._and(rule.eAllContents(xtext::AbstractElement)->first().oclIsKindOf(xtext::Assignment)))))]
 		b.sequence([/if]
 					[comment --- In this case, we caught all elements and processing them./]
-					[for(element : AbstractElement | rule.eAllContents(xtext::AbstractElement))]		
+					[for(element : AbstractElement | rule.eAllContents(xtext::AbstractElement))]
 						[comment --- Start ALTERNATIVES./]
 						[if(element.oclIsKindOf(xtext::Alternatives))]
 							[for(elementAux : AbstractElement | element.eAllContents(xtext::AbstractElement))]
@@ -124,87 +155,162 @@ public enum [grammarName.concat('Impl').toUpperFirst()/] implements GrammarRuleK
 									[if(elementAux.oclIsKindOf(xtext::RuleCall))] 
 										[if((i = element.eAllContents(xtext::AbstractElement)->size())._and(rule.eAllContents(xtext::AbstractElement)->last() = elementAux))]
 										[comment --- types of rule: Rule(Option1 | Option2)/]
-											[if(elementAux.oclAsType(xtext::RuleCall).rule.name.equalsIgnoreCase('EString'))]
+											[if(elementAux.oclAsType(xtext::RuleCall).rule.name.toUpper() = 'ESTRING')]
+												[if(((elementAux.oclAsType(xtext::RuleCall).ancestors(xtext::Assignment)->size() > 0)._and(elementAux.oclAsType(xtext::RuleCall).ancestors(xtext::Assignment)->at(1).operator = '+='))._or(elementAux.oclAsType(xtext::RuleCall).ancestors(xtext::Alternatives)->at(1).cardinality = '*'))]
+		b.zeroOrMore(b.isOneOfThem(STRING, STRING))
+												[else]
 		b.isOneOfThem(STRING, STRING)
-											[elseif(elementAux.oclAsType(xtext::RuleCall).rule.name.equalsIgnoreCase('EInt')._or(elementAux.oclAsType(xtext::RuleCall).rule.name.equalsIgnoreCase('EFloat')))]
+												[/if]
+											[elseif((elementAux.oclAsType(xtext::RuleCall).rule.name.toUpper() = 'EINT')._or(elementAux.oclAsType(xtext::RuleCall).rule.name.equalsIgnoreCase('EFloat')))]
+												[if(((elementAux.oclAsType(xtext::RuleCall).ancestors(xtext::Assignment)->size() > 0)._and(elementAux.oclAsType(xtext::RuleCall).ancestors(xtext::Assignment)->at(1).operator = '+='))._or(elementAux.oclAsType(xtext::RuleCall).ancestors(xtext::Alternatives)->at(1).cardinality = '*'))]
+		b.zeroOrMore(b.isOneOfThem(NUMBER, NUMBER))
+												[else]
 		b.isOneOfThem(NUMBER, NUMBER)
+												[/if]
 											[else]
+												[if(((elementAux.oclAsType(xtext::RuleCall).ancestors(xtext::Assignment)->size() > 0)._and(elementAux.oclAsType(xtext::RuleCall).ancestors(xtext::Assignment)->at(1).operator = '+='))._or(elementAux.oclAsType(xtext::RuleCall).ancestors(xtext::Alternatives)->at(1).cardinality = '*'))]
+		b.zeroOrMore([elementAux.oclAsType(xtext::RuleCall).rule.name.toUpper()/])
+												[else]
 		[elementAux.oclAsType(xtext::RuleCall).rule.name.toUpper()/]
+												[/if]
 											[/if]
 										[else]
-											[if(elementAux.oclAsType(xtext::RuleCall).rule.name.equalsIgnoreCase('EString'))]
+											[if(elementAux.oclAsType(xtext::RuleCall).rule.name.toUpper() = 'ESTRING')]
+												[if(((elementAux.oclAsType(xtext::RuleCall).ancestors(xtext::Assignment)->size() > 0)._and(elementAux.oclAsType(xtext::RuleCall).ancestors(xtext::Assignment)->at(1).operator = '+='))._or(elementAux.oclAsType(xtext::RuleCall).ancestors(xtext::Alternatives)->at(1).cardinality = '*'))]
+		b.zeroOrMore(b.isOneOfThem(STRING, STRING))[if(i = 1)],[elseif(i = element.eAllContents(xtext::AbstractElement)->size())]),[else],[/if]
+												[else]
 		b.isOneOfThem(STRING, STRING)[if(i = 1)],[elseif(i = element.eAllContents(xtext::AbstractElement)->size())]),[else],[/if]
-											[elseif(elementAux.oclAsType(xtext::RuleCall).rule.name.equalsIgnoreCase('EInt')._or(elementAux.oclAsType(xtext::RuleCall).rule.name.equalsIgnoreCase('EFloat')))]
+												[/if]
+											[elseif((elementAux.oclAsType(xtext::RuleCall).rule.name.toUpper() = 'EINT')._or(elementAux.oclAsType(xtext::RuleCall).rule.name.equalsIgnoreCase('EFloat')))]
+												[if(((elementAux.oclAsType(xtext::RuleCall).ancestors(xtext::Assignment)->size() > 0)._and(elementAux.oclAsType(xtext::RuleCall).ancestors(xtext::Assignment)->at(1).operator = '+='))._or(elementAux.oclAsType(xtext::RuleCall).ancestors(xtext::Alternatives)->at(1).cardinality = '*'))]
+		b.zeroOrMore(b.isOneOfThem(NUMBER, NUMBER))[if(i = 1)],[elseif(i = element.eAllContents(xtext::AbstractElement)->size())]),[else],[/if]			
+												[else]
 		b.isOneOfThem(NUMBER, NUMBER)[if(i = 1)],[elseif(i = element.eAllContents(xtext::AbstractElement)->size())]),[else],[/if]
+												[/if]
 											[else]
+												[if(((elementAux.oclAsType(xtext::RuleCall).ancestors(xtext::Assignment)->size() > 0)._and(elementAux.oclAsType(xtext::RuleCall).ancestors(xtext::Assignment)->at(1).operator = '+='))._or(elementAux.oclAsType(xtext::RuleCall).ancestors(xtext::Alternatives)->at(1).cardinality = '*'))]
+		b.zeroOrMore([elementAux.oclAsType(xtext::RuleCall).rule.name.toUpper()/])[if(i = 1)],[elseif(i = element.eAllContents(xtext::AbstractElement)->size())]),[else],[/if]
+												[else]
 		[elementAux.oclAsType(xtext::RuleCall).rule.name.toUpper()/][if(i = 1)],[elseif(i = element.eAllContents(xtext::AbstractElement)->size())]),[else],[/if]
+												[/if]
 											[/if]			
 										[/if]
 									[comment --- The alternatives are Keywords./]
 								 	[elseif(elementAux.oclIsKindOf(xtext::Keyword))]
 										[if((i = element.eAllContents(xtext::AbstractElement)->size())._and(rule.eAllContents(xtext::AbstractElement)->last() = elementAux))]
 											[if(elementAux.oclAsType(xtext::Keyword).value.compareKeywordTemplate().contains('true')._and(elementAux.oclAsType(xtext::Keyword).value.noValidCharactersTemplate().contains('false')))]
+												[if(((elementAux.oclAsType(xtext::Keyword).ancestors(xtext::Assignment)->size() > 0)._and(elementAux.oclAsType(xtext::Keyword).ancestors(xtext::Assignment)->at(1).operator = '+='))._or(elementAux.oclAsType(xtext::Keyword).ancestors(xtext::Alternatives)->at(1).cardinality = '*'))]
+		b.zeroOrMore(b.isOneOfThem([grammarName.concat('Punctuator').toUpperFirst()/].[elementAux.oclAsType(xtext::Keyword).value.renameKeywordSimpleTemplate()/], [grammarName.concat('Punctuator').toUpperFirst()/].[elementAux.oclAsType(xtext::Keyword).value.renameKeywordSimpleTemplate()/]))
+												[else]
 		b.isOneOfThem([grammarName.concat('Punctuator').toUpperFirst()/].[elementAux.oclAsType(xtext::Keyword).value.renameKeywordSimpleTemplate()/], [grammarName.concat('Punctuator').toUpperFirst()/].[elementAux.oclAsType(xtext::Keyword).value.renameKeywordSimpleTemplate()/])
+												[/if]
 											[elseif(elementAux.oclAsType(xtext::Keyword).value.compareKeywordTemplate().contains('false')._and(elementAux.oclAsType(xtext::Keyword).value.noValidCharactersTemplate().contains('false')))]
+												[if(((elementAux.oclAsType(xtext::Keyword).ancestors(xtext::Assignment)->size() > 0)._and(elementAux.oclAsType(xtext::Keyword).ancestors(xtext::Assignment)->at(1).operator = '+='))._or(elementAux.oclAsType(xtext::Keyword).ancestors(xtext::Alternatives)->at(1).cardinality = '*'))]
+		b.zeroOrMore(b.isOneOfThem([grammarName.concat('Keyword').toUpperFirst()/].[elementAux.oclAsType(xtext::Keyword).value.renameKeywordWithSpecialCharacterTemplate().toUpper()/], [grammarName.concat('Keyword').toUpperFirst()/].[elementAux.oclAsType(xtext::Keyword).value.renameKeywordWithSpecialCharacterTemplate().toUpper()/]))
+												[else]
 		b.isOneOfThem([grammarName.concat('Keyword').toUpperFirst()/].[elementAux.oclAsType(xtext::Keyword).value.renameKeywordWithSpecialCharacterTemplate().toUpper()/], [grammarName.concat('Keyword').toUpperFirst()/].[elementAux.oclAsType(xtext::Keyword).value.renameKeywordWithSpecialCharacterTemplate().toUpper()/])
+												[/if]
 											[/if]
 										[else]
 											[if(elementAux.oclAsType(xtext::Keyword).value.compareKeywordTemplate().contains('true')._and(elementAux.oclAsType(xtext::Keyword).value.noValidCharactersTemplate().contains('false')))]
+												[if(((elementAux.oclAsType(xtext::Keyword).ancestors(xtext::Assignment)->size() > 0)._and(elementAux.oclAsType(xtext::Keyword).ancestors(xtext::Assignment)->at(1).operator = '+='))._or(elementAux.oclAsType(xtext::Keyword).ancestors(xtext::Alternatives)->at(1).cardinality = '*'))]
+		b.zeroOrMore(b.isOneOfThem([grammarName.concat('Punctuator').toUpperFirst()/].[elementAux.oclAsType(xtext::Keyword).value.renameKeywordSimpleTemplate()/], [grammarName.concat('Punctuator').toUpperFirst()/].[elementAux.oclAsType(xtext::Keyword).value.renameKeywordSimpleTemplate()/]))[if(i = 1)],[elseif(i = element.eAllContents(xtext::AbstractElement)->size())]),[else],[/if]
+												[else]
 		b.isOneOfThem([grammarName.concat('Punctuator').toUpperFirst()/].[elementAux.oclAsType(xtext::Keyword).value.renameKeywordSimpleTemplate()/], [grammarName.concat('Punctuator').toUpperFirst()/].[elementAux.oclAsType(xtext::Keyword).value.renameKeywordSimpleTemplate()/])[if(i = 1)],[elseif(i = element.eAllContents(xtext::AbstractElement)->size())]),[else],[/if]
+												[/if]
 											[elseif(elementAux.oclAsType(xtext::Keyword).value.compareKeywordTemplate().contains('false')._and(elementAux.oclAsType(xtext::Keyword).value.noValidCharactersTemplate().contains('false')))]
+												[if(((elementAux.oclAsType(xtext::Keyword).ancestors(xtext::Assignment)->size() > 0)._and(elementAux.oclAsType(xtext::Keyword).ancestors(xtext::Assignment)->at(1).operator = '+='))._or(elementAux.oclAsType(xtext::Keyword).ancestors(xtext::Alternatives)->at(1).cardinality = '*'))]
+		b.zeroOrMore(b.isOneOfThem([grammarName.concat('Keyword').toUpperFirst()/].[elementAux.oclAsType(xtext::Keyword).value.renameKeywordWithSpecialCharacterTemplate().toUpper()/], [grammarName.concat('Keyword').toUpperFirst()/].[elementAux.oclAsType(xtext::Keyword).value.renameKeywordWithSpecialCharacterTemplate().toUpper()/]))[if(i = 1)],[elseif(i = element.eAllContents(xtext::AbstractElement)->size())]),[else],[/if]
+												[else]
 		b.isOneOfThem([grammarName.concat('Keyword').toUpperFirst()/].[elementAux.oclAsType(xtext::Keyword).value.renameKeywordWithSpecialCharacterTemplate().toUpper()/], [grammarName.concat('Keyword').toUpperFirst()/].[elementAux.oclAsType(xtext::Keyword).value.renameKeywordWithSpecialCharacterTemplate().toUpper()/])[if(i = 1)],[elseif(i = element.eAllContents(xtext::AbstractElement)->size())]),[else],[/if]
+												[/if]
 											[/if]
 										[/if]
 									[/if]
 									[if(rule.eAllContents(xtext::AbstractElement)->last() = elementAux)]
-		)).skipIfOneChild();
+		[if(not((rule.eAllContents(xtext::AbstractElement)->first().oclIsKindOf(xtext::Alternatives))._and(rule.eAllContents(xtext::AbstractElement)->last().ancestors(xtext::Alternatives)->size() <> 0)))._and(rule.eAllContents(xtext::AbstractElement)->size() > 1)._and(not((rule.eAllContents(xtext::AbstractElement)->at(2).oclIsKindOf(xtext::Alternatives)._and(rule.eAllContents(xtext::AbstractElement)->first().oclIsKindOf(xtext::Assignment)))))])[/if])).skipIfOneChild();
 									[/if]
 							[/for]
 						[comment --- End ALTERNATIVES./]
 						[comment --- Start KEYWORDS./]
 						[elseif((element.oclIsKindOf(xtext::Keyword))._and(element.ancestors(xtext::Alternatives)->size() = 0))]
 							[comment --- If his parent is optional, he too/]
-							[if(element.oclAsType(xtext::Keyword).ancestors(xtext::Group)->at(1).cardinality = '?')]
+							[if((element.oclAsType(xtext::Keyword).ancestors(xtext::Group)->at(1).cardinality = '?')._or(element.oclAsType(xtext::Keyword).ancestors(xtext::Assignment)->at(1).cardinality = '?')._or(element.oclAsType(xtext::Keyword).cardinality = '?'))]
 		b.optional(
 							[/if]
 							[comment --- Rename the special characters./]
 							[if(element.oclAsType(xtext::Keyword).value.compareKeywordTemplate().contains('true')._and(element.oclAsType(xtext::Keyword).value.noValidCharactersTemplate().contains('false')))]
-		b.isOneOfThem([grammarName.concat('Punctuator').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.renameKeywordSimpleTemplate()/], [grammarName.concat('Punctuator').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.renameKeywordSimpleTemplate()/])[if(i <> size)][if(element.oclAsType(xtext::Keyword).ancestors(xtext::Group)->at(1).cardinality = '?')])[/if],[/if]
+								[if(((element.oclAsType(xtext::Keyword).ancestors(xtext::Assignment)->size() > 0)._and(element.oclAsType(xtext::Keyword).ancestors(xtext::Assignment)->at(1).operator = '+='))._or((element.oclAsType(xtext::Keyword).ancestors(xtext::Group)->size() > 0)._and(element.oclAsType(xtext::Keyword).ancestors(xtext::Group)->at(1).cardinality = '*')._and(element.oclAsType(xtext::Keyword).ancestors(xtext::Group)->at(1).eAllContents(xtext::AbstractElement)->first() = element)))]
+		b.zeroOrMore(b.isOneOfThem([grammarName.concat('Punctuator').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.renameKeywordSimpleTemplate()/], [grammarName.concat('Punctuator').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.renameKeywordSimpleTemplate()/]))[if((element.oclAsType(xtext::Keyword).ancestors(xtext::Group)->at(1).cardinality = '?')._or(element.oclAsType(xtext::Keyword).ancestors(xtext::Assignment)->at(1).cardinality = '?')._or(element.oclAsType(xtext::Keyword).cardinality = '?'))])[/if][if(i <> size)],[/if]
+								[else]
+		b.isOneOfThem([grammarName.concat('Punctuator').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.renameKeywordSimpleTemplate()/], [grammarName.concat('Punctuator').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.renameKeywordSimpleTemplate()/])[if((element.oclAsType(xtext::Keyword).ancestors(xtext::Group)->at(1).cardinality = '?')._or(element.oclAsType(xtext::Keyword).ancestors(xtext::Assignment)->at(1).cardinality = '?')._or(element.oclAsType(xtext::Keyword).cardinality = '?'))])[/if][if(i <> size)],[/if]
+								[/if]
 							[elseif(element.oclAsType(xtext::Keyword).value.compareKeywordTemplate().contains('false')._and(element.oclAsType(xtext::Keyword).value.noValidCharactersTemplate().contains('false')))]
-		b.isOneOfThem([grammarName.concat('Keyword').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.renameKeywordWithSpecialCharacterTemplate().toUpper()/], [grammarName.concat('Keyword').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.renameKeywordWithSpecialCharacterTemplate().toUpper()/])[if(i <> size)][if(element.oclAsType(xtext::Keyword).ancestors(xtext::Group)->at(1).cardinality = '?')])[/if],[/if]
+								[if(((element.oclAsType(xtext::Keyword).ancestors(xtext::Assignment)->size() > 0)._and(element.oclAsType(xtext::Keyword).ancestors(xtext::Assignment)->at(1).operator = '+='))._or((element.oclAsType(xtext::Keyword).ancestors(xtext::Group)->size() > 0)._and(element.oclAsType(xtext::Keyword).ancestors(xtext::Group)->at(1).cardinality = '*')._and(element.oclAsType(xtext::Keyword).ancestors(xtext::Group)->at(1).eAllContents(xtext::AbstractElement)->first() = element)))]
+		b.zeroOrMore(b.isOneOfThem([grammarName.concat('Keyword').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.renameKeywordWithSpecialCharacterTemplate().toUpper()/], [grammarName.concat('Keyword').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.renameKeywordWithSpecialCharacterTemplate().toUpper()/]))[if((element.oclAsType(xtext::Keyword).ancestors(xtext::Group)->at(1).cardinality = '?')._or(element.oclAsType(xtext::Keyword).ancestors(xtext::Assignment)->at(1).cardinality = '?')._or(element.oclAsType(xtext::Keyword).cardinality = '?'))])[/if][if(i <> size)],[/if]
+								[else]
+		b.isOneOfThem([grammarName.concat('Keyword').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.renameKeywordWithSpecialCharacterTemplate().toUpper()/], [grammarName.concat('Keyword').toUpperFirst()/].[element.oclAsType(xtext::Keyword).value.renameKeywordWithSpecialCharacterTemplate().toUpper()/])[if((element.oclAsType(xtext::Keyword).ancestors(xtext::Group)->at(1).cardinality = '?')._or(element.oclAsType(xtext::Keyword).ancestors(xtext::Assignment)->at(1).cardinality = '?')._or(element.oclAsType(xtext::Keyword).cardinality = '?'))])[/if][if(i <> size)],[/if]
+								[/if]
 							[/if]
 						[comment --- End KEYWORDS./]
 						[comment --- Start RULECALLS./]
 						[elseif(element.oclIsKindOf(xtext::RuleCall)._and(element.ancestors(xtext::Alternatives)->size() = 0))]
+							[comment -- If his parent is optional, he too/]
+							[if((element.oclAsType(xtext::RuleCall).ancestors(xtext::Group)->at(1).cardinality = '?')._or(element.oclAsType(xtext::RuleCall).ancestors(xtext::Assignment)->at(1).cardinality = '?'))]
+		b.optional(
+							[/if]
 							[comment --- If have a Crossreference is a Identifier./]
-							[if(element.oclAsType(xtext::RuleCall).ancestors(xtext::Assignment)->at(1).eContents(xtext::CrossReference)->size() > 0)]
-								[if(element.oclAsType(xtext::RuleCall).ancestors(xtext::Assignment)->at(1).operator = '+=')]
-		[comment --- Are identifier of other classes of the metamodel./]
-		b.zeroOrMore(IDENTIFIER)[if(i <> size)],[/if]
-								[/if]
-							[comment --- If is a EString then is a Identifier too./]
-						[elseif((element.oclAsType(xtext::RuleCall).rule.type.classifier.name = 'EString')._and(element.ancestors(xtext::Alternatives)->size() = 0))]
-								[if(element.oclAsType(xtext::RuleCall).ancestors(xtext::Assignment)->at(1).operator = '+=')]
-		[comment --- Are identifier of other classes of the metamodel./]
-		b.zeroOrMore(IDENTIFIER)[if(i <> size)],[/if]
+							[if(element.oclAsType(xtext::RuleCall).ancestors(xtext::Assignment)->size() <> 0)]
+								[if((element.oclAsType(xtext::RuleCall).ancestors(xtext::Assignment)->at(1).eContents(xtext::CrossReference)->size() > 0)._or(element.oclAsType(xtext::RuleCall).rule.name.toUpper() = 'ID'))]
+									[if(element.oclAsType(xtext::RuleCall).ancestors(xtext::Assignment)->at(1).operator = '+=')]
+									[comment --- Are identifier of other classes of the metamodel./]
+		b.zeroOrMore(IDENTIFIER)[if((element.oclAsType(xtext::RuleCall).ancestors(xtext::Group)->at(1).cardinality = '?')._or(element.oclAsType(xtext::RuleCall).ancestors(xtext::Assignment)->at(1).cardinality = '?'))])[/if][if(i <> size)],[/if]
+									[else]
+		IDENTIFIER[if((element.oclAsType(xtext::RuleCall).ancestors(xtext::Group)->at(1).cardinality = '?')._or(element.oclAsType(xtext::RuleCall).ancestors(xtext::Assignment)->at(1).cardinality = '?'))])[/if][if(i <> size)],[/if]
+									[/if]
+								[comment --- If is a EInt then is a 'NUMBER' of the lexer./]
+								[elseif(((element.oclAsType(xtext::RuleCall).rule.name.toUpper() = 'EINT')._or(element.oclAsType(xtext::RuleCall).rule.name.toUpper() = 'EFLOAT'))._and(element.ancestors(xtext::Alternatives)->size() = 0))]
+									[if(element.oclAsType(xtext::RuleCall).ancestors(xtext::Assignment)->at(1).operator = '+=')]
+		b.zeroOrMore(b.isOneOfThem(NUMBER, NUMBER))[if((element.oclAsType(xtext::RuleCall).ancestors(xtext::Group)->at(1).cardinality = '?')._or(element.oclAsType(xtext::RuleCall).ancestors(xtext::Assignment)->at(1).cardinality = '?'))])[/if][if(i <> size)],[/if]
+									[else]
+		b.isOneOfThem(NUMBER, NUMBER)[if((element.oclAsType(xtext::RuleCall).ancestors(xtext::Group)->at(1).cardinality = '?')._or(element.oclAsType(xtext::RuleCall).ancestors(xtext::Assignment)->at(1).cardinality = '?'))])[/if][if(i <> size)],[/if]
+									[/if]
+								[comment --- If is a EString then is a 'STRING' of the lexer./]
+								[elseif((element.oclAsType(xtext::RuleCall).rule.name.toUpper() = 'ESTRING')._and(element.ancestors(xtext::Alternatives)->size() = 0))]
+									[if(element.oclAsType(xtext::RuleCall).ancestors(xtext::Assignment)->at(1).operator = '+=')]
+		b.zeroOrMore(b.isOneOfThem(STRING, STRING))[if((element.oclAsType(xtext::RuleCall).ancestors(xtext::Group)->at(1).cardinality = '?')._or(element.oclAsType(xtext::RuleCall).ancestors(xtext::Assignment)->at(1).cardinality = '?'))])[/if][if(i <> size)],[/if]
+									[else]
+		b.isOneOfThem(STRING, STRING)[if((element.oclAsType(xtext::RuleCall).ancestors(xtext::Group)->at(1).cardinality = '?')._or(element.oclAsType(xtext::RuleCall).ancestors(xtext::Assignment)->at(1).cardinality = '?'))])[/if][if(i <> size)],[/if]
+									[/if]
+								[comment --- In this case, is a normal atribute of another class type./]
 								[else]
-		IDENTIFIER[if(i <> size)],[/if]
+									[if(element.oclAsType(xtext::RuleCall).ancestors(xtext::Assignment)->at(1).operator = '+=')]
+		b.zeroOrMore([element.oclAsType(xtext::RuleCall).rule.name.toUpper()/])[if((element.oclAsType(xtext::RuleCall).ancestors(xtext::Group)->at(1).cardinality = '?')._or(element.oclAsType(xtext::RuleCall).ancestors(xtext::Assignment)->at(1).cardinality = '?'))])[/if][if(i <> size)],[/if]
+									[else]
+		[element.oclAsType(xtext::RuleCall).rule.name.toUpper()/][if((element.oclAsType(xtext::RuleCall).ancestors(xtext::Group)->at(1).cardinality = '?')._or(element.oclAsType(xtext::RuleCall).ancestors(xtext::Assignment)->at(1).cardinality = '?'))])[/if][if(i <> size)],[/if]
+									[/if]
 								[/if]
-							[comment --- If is a EInt then is a 'NUMERO' of the lexer./]
-						[elseif((element.oclAsType(xtext::RuleCall).rule.type.classifier.name.equalsIgnoreCase('EInt'))._or(element.oclAsType(xtext::RuleCall).rule.type.classifier.name.equalsIgnoreCase('EFloat'))._and(element.ancestors(xtext::Alternatives)->size() = 0))]
-								[if(element.oclAsType(xtext::RuleCall).ancestors(xtext::Assignment)->at(1).operator = '+=')]
-		b.zeroOrMore(b.isOneOfThem(NUMBER, NUMBER))[if(i <> size)],[/if]
+						[else]
+							[if(((element.oclAsType(xtext::RuleCall).rule.name.toUpper() = 'EINT')._or(element.oclAsType(xtext::RuleCall).rule.name.toUpper() = 'EFLOAT'))._and(element.ancestors(xtext::Alternatives)->size() = 0))]
+								[if(element.oclAsType(xtext::RuleCall).ancestors(xtext::Group)->at(1).cardinality = '*')]
+		b.zeroOrMore(b.isOneOfThem(NUMBER, NUMBER))[if((element.oclAsType(xtext::RuleCall).ancestors(xtext::Group)->at(1).cardinality = '?')._or(element.oclAsType(xtext::RuleCall).ancestors(xtext::Assignment)->at(1).cardinality = '?'))])[/if][if(i <> size)],[/if]
 								[else]
-		b.isOneOfThem(NUMBER, NUMBER)[if(i <> size)],[/if]
+		b.isOneOfThem(NUMBER, NUMBER)[if((element.oclAsType(xtext::RuleCall).ancestors(xtext::Group)->at(1).cardinality = '?')._or(element.oclAsType(xtext::RuleCall).ancestors(xtext::Assignment)->at(1).cardinality = '?'))])[/if][if(i <> size)],[/if]
 								[/if]
-							[comment --- In this case, is a normal atribute of another class type./]
-						[elseif(element.ancestors(xtext::Alternatives)->size() = 0)]
-								[if(element.oclAsType(xtext::RuleCall).ancestors(xtext::Assignment)->at(1).operator = '+=')]
-		b.zeroOrMore([element.oclAsType(xtext::RuleCall).rule.name.toUpper()/])[if(i <> size)],[/if]
+							[elseif((element.oclAsType(xtext::RuleCall).rule.name.toUpper() = 'ESTRING')._and(element.ancestors(xtext::Alternatives)->size() = 0))]
+								[if(element.oclAsType(xtext::RuleCall).ancestors(xtext::Group)->at(1).cardinality = '*')]
+		b.zeroOrMore(b.isOneOfThem(STRING, STRING))[if((element.oclAsType(xtext::RuleCall).ancestors(xtext::Group)->at(1).cardinality = '?')._or(element.oclAsType(xtext::RuleCall).ancestors(xtext::Assignment)->at(1).cardinality = '?'))])[/if][if(i <> size)],[/if]
 								[else]
-		[element.oclAsType(xtext::RuleCall).rule.name.toUpper()/][if(i <> size)],[/if]
+		b.isOneOfThem(STRING, STRING)[if((element.oclAsType(xtext::RuleCall).ancestors(xtext::Group)->at(1).cardinality = '?')._or(element.oclAsType(xtext::RuleCall).ancestors(xtext::Assignment)->at(1).cardinality = '?'))])[/if][if(i <> size)],[/if]
+								[/if]
+							[else]
+								[if(element.oclAsType(xtext::RuleCall).ancestors(xtext::Group)->at(1).cardinality = '*')]
+		b.zeroOrMore([element.oclAsType(xtext::RuleCall).rule.name.toUpper()/])[if((element.oclAsType(xtext::RuleCall).ancestors(xtext::Group)->at(1).cardinality = '?')._or(element.oclAsType(xtext::RuleCall).ancestors(xtext::Assignment)->at(1).cardinality = '?'))])[/if][if(i <> size)],[/if]
+								[else]
+		[element.oclAsType(xtext::RuleCall).rule.name.toUpper()/][if((element.oclAsType(xtext::RuleCall).ancestors(xtext::Group)->at(1).cardinality = '?')._or(element.oclAsType(xtext::RuleCall).ancestors(xtext::Assignment)->at(1).cardinality = '?'))])[/if][if(i <> size)],[/if]
 								[/if]
 							[/if]
+						[/if]
 						[comment --- End RULECALLS./]
 						[/if]
 					[/for]
@@ -214,7 +320,6 @@ public enum [grammarName.concat('Impl').toUpperFirst()/] implements GrammarRuleK
 		[lineSeparator()/]
 		[/for]
 	}
-
 }
 [/file]
 
@@ -264,7 +369,6 @@ public enum [grammarName.concat('Keyword')/] implements TokenType, GrammarRuleKe
     }
     return keywords;
   }
-
 }
 [/file]
 
@@ -336,7 +440,9 @@ import org.sonar.sslr.grammar.GrammarRuleKey;
 
 public enum [grammarName/]TokenType implements TokenType, GrammarRuleKey {
   [for(rule : TerminalRule | aGrammar.eAllContents(xtext::TerminalRule))]
+  [if((rule.name.toUpper().equalsIgnoreCase('NUMBER') <> true)._and(rule.name.toUpper().equalsIgnoreCase('STRING') <> true)._and(rule.name.toUpper().equalsIgnoreCase('CHARACTER') <> true))]
   [rule.name.toUpper()/],
+  [/if]
   [/for]
   CHARACTER,
   NUMBER,
@@ -446,6 +552,121 @@ public final class [grammarName/]AstScanner {
         builder.withSquidAstVisitor(visitor);
     }
     return builder.build();
+  }
+}
+[/file]
+[file(grammarName.concat('ParseErrorLoggerVisitor.java'), false, 'UTF-8')]
+package org.sonar.[grammarName/].api;
+
+import org.sonar.[grammarName/].api.[grammarName/]Impl;
+import org.sonar.squidbridge.SquidAstVisitor;
+import org.sonar.squidbridge.SquidAstVisitorContext;
+
+import com.sonar.sslr.api.AstAndTokenVisitor;
+import com.sonar.sslr.api.AstNode;
+import com.sonar.sslr.api.GenericTokenType;
+import com.sonar.sslr.api.Grammar;
+import com.sonar.sslr.api.Token;
+
+public class [grammarName/]ParseErrorLoggerVisitor <GRAMMAR extends Grammar> extends SquidAstVisitor<GRAMMAR> implements AstAndTokenVisitor {
+
+  private SquidAstVisitorContext context = null;
+
+  public [grammarName/]ParseErrorLoggerVisitor(SquidAstVisitorContext context){
+    this.context = context;
+  }
+
+  @Override
+  public void init() {
+    subscribeTo([grammarName/]Impl.[aGrammar.rules->at(1).name.toUpper()/]);
+  }
+
+  @Override
+  public void visitNode(AstNode node) {
+    AstNode identifierAst = node.getFirstChild(GenericTokenType.IDENTIFIER);
+    if( identifierAst != null ) {
+      [grammarName/]Impl.LOG.warn("['['/]{}:{}[']'/]: syntax error, skip '{}'", new Object['[]'/] {context.getFile(), node.getToken().getLine(), identifierAst.getTokenValue()});
+    }
+  }
+
+  public void visitToken(Token token) {
+  }
+}
+[/file]
+[file(grammarName.concat('CommentLinesVisitor.java'), false, 'UTF-8')]
+package org.sonar.[grammarName/].api;
+
+import java.util.Set;
+
+import org.sonar.squidbridge.SquidAstVisitor;
+import org.sonar.squidbridge.api.SourceCode;
+import org.sonar.squidbridge.measures.MetricDef;
+
+import com.google.common.collect.Sets;
+import com.sonar.sslr.api.AstAndTokenVisitor;
+import com.sonar.sslr.api.AstNode;
+import com.sonar.sslr.api.Grammar;
+import com.sonar.sslr.api.Token;
+import com.sonar.sslr.api.Trivia;
+
+public class [grammarName/]CommentLinesVisitor <GRAMMAR extends Grammar> extends SquidAstVisitor<GRAMMAR> implements AstAndTokenVisitor {
+
+  private final MetricDef metric;
+  private Set<Integer> comments = Sets.newHashSet();
+  private boolean seenFirstToken;
+  
+  public [grammarName/]CommentLinesVisitor(MetricDef metric) {
+	    this.metric = metric;
+  }
+
+  @Override
+  public void init() {
+    subscribeTo(/*TO COMPLETE WITH THE FUNCTION RULES BY THE FINAL USER*/);
+  }
+
+  @Override
+  public void visitFile(AstNode astNode) {
+    comments.clear();
+    seenFirstToken = false;
+  }
+
+  public void visitToken(Token token) {
+    for (Trivia trivia : token.getTrivia()) {
+      if (trivia.isComment()) {
+        if (seenFirstToken) {
+          String['[]'/] commentLines = getContext().getCommentAnalyser().getContents(trivia.getToken().getOriginalValue())
+              .split("(\r)?\n|\r", -1);
+          int line = trivia.getToken().getLine();
+          for (String commentLine : commentLines) {
+            if (!commentLine.contains("NOSONAR") && !getContext().getCommentAnalyser().isBlank(commentLine)) {
+              comments.add(line);
+            }
+            line++;
+          }
+        } else {
+          seenFirstToken = true;
+        }
+      }
+    }
+    seenFirstToken = true;
+  }
+
+  @Override
+  public void leaveNode(AstNode astNode) {
+    SourceCode sourceCode = getContext().peekSourceCode();
+    int commentlines = 0;
+    for (int line = sourceCode.getStartAtLine(); line <= sourceCode.getEndAtLine(); line++) {
+      if (comments.contains(line)) {
+        commentlines++;
+      }
+    }
+    sourceCode.setMeasure([grammarName/]Metric.COMMENT_LINES, commentlines);
+  }
+
+  public void leaveFile(AstNode ast) {
+	getContext().peekSourceCode().add(metric, comments.size());
+    getContext().peekSourceCode().setMeasure([grammarName/]Metric.COMMENT_LINES, comments.size());
+    comments.clear();
   }
 }
 [/file]

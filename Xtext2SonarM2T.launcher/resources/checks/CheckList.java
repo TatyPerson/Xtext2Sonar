@@ -16,8 +16,8 @@ public final class CheckList {
   @SuppressWarnings("rawtypes")
   public static List<Class> getChecks() {
     return ImmutableList.<Class>of(
-    	//FileComplexityCheck.class,
-    	//TooLongLineCheck.class
+    	FileComplexityCheck.class,
+    	TooLongLineCheck.class
     );
   }
 

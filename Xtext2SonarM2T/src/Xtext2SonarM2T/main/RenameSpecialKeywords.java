@@ -30,6 +30,8 @@ public class RenameSpecialKeywords {
 			return "SK" + toAscii(keyword) + "(\"" + "\\\"" + "\")";
 		} else if(keyword.equals("\\")) {
 			return "SK" + toAscii(keyword) + "(\"" + "\\\\" + "\")";
+		} else if(keyword.endsWith("\\") && !keyword.startsWith("\\")) {
+			return "SK" + toAscii(keyword) + "(\"" + keyword + "\"" + "\")";
 		} else {
 			return "SK" + toAscii(keyword)+ "(\"" + keyword + "\")";
 		}

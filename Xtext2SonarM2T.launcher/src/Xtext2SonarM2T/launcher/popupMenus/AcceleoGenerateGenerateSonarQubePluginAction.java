@@ -294,10 +294,10 @@ public class AcceleoGenerateGenerateSonarQubePluginAction extends ActionDelegate
 		addFileToProject(projectChecks,"resources/checks/TooLongLineCheck.java", "src/main/java/" + "org/sonar/" + name + "/checks/TooLongLineCheck.java", monitor, name, false);
 		addFileToProject(projectChecks,"resources/checks/CompileIncludePathNotFoundOrInvalid.java", "src/main/java/" + "org/sonar/" + name + "/checks/CompileIncludePathNotFoundOrInvalid.java", monitor, name, false);
 		
-		javaProjectChecks.getPackageFragmentRoot(sourcefolderesourcesChecks).createPackageFragment("org.sonar.l10n." + name +".rules." + name, false, null);
-		addFileToProject(projectChecks,"resources/checks/TooLongLine.html", "src/main/resources/" + "org/sonar/l10n/" + name + "/rules/" + name + "/TooLongLine.html", monitor, name, false);
-		addFileToProject(projectChecks,"resources/checks/FileComplexity.html", "src/main/resources/" + "org/sonar/l10n/" + name + "/rules/" + name + "/FileComplexity.html", monitor, name, false);
-		addFileToProject(projectChecks,"resources/checks/CompileIncludePathNotFoundOrInvalid.html", "src/main/resources/" + "org/sonar/l10n/" + name + "/rules/" + name + "/CompileIncludePathNotFoundOrInvalid.html", monitor, name, false);
+		//javaProjectChecks.getPackageFragmentRoot(sourcefolderesourcesChecks).createPackageFragment("org.sonar.l10n." + name +".rules." + name, false, null);
+		//addFileToProject(projectChecks,"resources/checks/TooLongLine.html", "src/main/resources/" + "org/sonar/l10n/" + name + "/rules/" + name + "/TooLongLine.html", monitor, name, false);
+		//addFileToProject(projectChecks,"resources/checks/FileComplexity.html", "src/main/resources/" + "org/sonar/l10n/" + name + "/rules/" + name + "/FileComplexity.html", monitor, name, false);
+		//addFileToProject(projectChecks,"resources/checks/CompileIncludePathNotFoundOrInvalid.html", "src/main/resources/" + "org/sonar/l10n/" + name + "/rules/" + name + "/CompileIncludePathNotFoundOrInvalid.html", monitor, name, false);
 		
 		//4) name-squid project
 		String projectSquidName = name + "-squid";
@@ -339,10 +339,8 @@ public class AcceleoGenerateGenerateSonarQubePluginAction extends ActionDelegate
 		
 		javaProjectSquid.getPackageFragmentRoot(sourcefolderjavaSquid).createPackageFragment("org.sonar." + name + ".visitors", false, null);
 		addFileToProject(projectSquid,"resources/squid/XCharsetAwareVisitor.java", "src/main/java/" + "org/sonar/" + name + "/visitors/" + name + "CharsetAwareVisitor.java", monitor, name, false);
-		addFileToProject(projectSquid,"resources/squid/XCommentLinesVisitor.java", "src/main/java/" + "org/sonar/" + name + "/visitors/" + name + "CommentLinesVisitor.java", monitor, name, false);
 		addFileToProject(projectSquid,"resources/squid/XFileVisitor.java", "src/main/java/" + "org/sonar/" + name + "/visitors/" + name + "FileVisitor.java", monitor, name, false);
 		addFileToProject(projectSquid,"resources/squid/XLinesOfCodeVisitor.java", "src/main/java/" + "org/sonar/" + name + "/visitors/" + name + "LinesOfCodeVisitor.java", monitor, name, false);
-		addFileToProject(projectSquid,"resources/squid/XParseErrorLoggerVisitor.java", "src/main/java/" + "org/sonar/" + name + "/visitors/" + name + "ParseErrorLoggerVisitor.java", monitor, name, false);
 		
 		//----- Copy all projects in the main project : Maven multi module
 		

@@ -44,7 +44,7 @@ public class CharacterLiteralsChannel extends Channel<Lexer> {
   private boolean read(CodeReader code) {
     index++;
     while (code.charAt(index) != ch) {
-      if (code.charAt(index) == EOF) {
+      if (code.charAt(index) == EOF || code.charAt(index) == '\n') {
         return false;
       }
       if (code.charAt(index) == '\\') {

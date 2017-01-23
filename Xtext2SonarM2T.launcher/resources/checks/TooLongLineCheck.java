@@ -25,6 +25,7 @@ import org.sonar.NAME.visitors.NAMECharsetAwareVisitor;
 @Rule(
   key = "TooLongLine",
   name = "Lines of code should not be too long",
+  description = "Verifies that all lines of code not be too long.",
   tags = {Tags.BRAIN_OVERLOAD},
   priority = Priority.MINOR)
 @ActivatedByDefault

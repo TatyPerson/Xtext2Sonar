@@ -32,7 +32,7 @@ public class NAMELanguage extends AbstractLanguage {
   /**
    * Default Java files knows suffixes
    */
-  public static final String DEFAULT_FILE_SUFFIXES = ".p,.ep";
+  public static final String DEFAULT_FILE_SUFFIXES = ".LOWER";
 
   /**
    * Settings of the plugin.
