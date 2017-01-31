@@ -63,6 +63,6 @@ public class RenameSpecialKeywords {
 	 * @return the renamed keyword.
 	 */
 	public static String renameKeywordWithSpecialCharacter(final String keyword) {
-		return keyword.replaceAll("\\p{Punct}", "_").replaceAll("\\p{Space}", "_");
+		return (keyword.replaceAll("\\p{Punct}", "_").replaceAll("\\p{Space}", "_") + "_" + keyword.hashCode()).replaceAll("-", "");
 	}
 }
