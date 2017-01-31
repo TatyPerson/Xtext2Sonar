@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<profile>
+  <name>persistence</name>
+  <language>persistence</language>
+  <rules>
+    <rule>
+      <repositoryKey>persistence</repositoryKey>
+      <key>CompileIncludePathNotFoundOrInvalid</key>  <!-- formatting rule -->
+      <priority>MINOR</priority>
+    </rule>
+    <rule>
+      <repositoryKey>persistence</repositoryKey>
+      <key>FileComplexity</key>  <!-- class name -->
+      <priority>MINOR</priority>
+    </rule>
+  </rules>
+</profile>
