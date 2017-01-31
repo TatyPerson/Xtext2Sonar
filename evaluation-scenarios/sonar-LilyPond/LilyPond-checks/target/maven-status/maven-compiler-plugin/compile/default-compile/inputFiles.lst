@@ -1,0 +1,7 @@
+/Users/Taty/Documents/runtime-Xtext2SonarTests/sonar-LilyPond/lilypond-checks/src/main/java/org/sonar/LilyPond/checks/CompileIncludePathNotFoundOrInvalid.java
+/Users/Taty/Documents/runtime-Xtext2SonarTests/sonar-LilyPond/lilypond-checks/src/main/java/org/sonar/LilyPond/checks/RepeatVoltaUseCheck.java
+/Users/Taty/Documents/runtime-Xtext2SonarTests/sonar-LilyPond/lilypond-checks/src/main/java/org/sonar/LilyPond/checks/TooLongLineCheck.java
+/Users/Taty/Documents/runtime-Xtext2SonarTests/sonar-LilyPond/lilypond-checks/src/main/java/org/sonar/LilyPond/checks/ComposerIsDefinedCheck.java
+/Users/Taty/Documents/runtime-Xtext2SonarTests/sonar-LilyPond/lilypond-checks/src/main/java/org/sonar/LilyPond/checks/TitleIsDefinedCheck.java
+/Users/Taty/Documents/runtime-Xtext2SonarTests/sonar-LilyPond/lilypond-checks/src/main/java/org/sonar/LilyPond/checks/CheckList.java
+/Users/Taty/Documents/runtime-Xtext2SonarTests/sonar-LilyPond/lilypond-checks/src/main/java/org/sonar/LilyPond/checks/FileComplexityCheck.java
