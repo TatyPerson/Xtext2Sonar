@@ -1,0 +1,4 @@
+/Users/Taty/Documents/runtime-Xtext2SonarTests/sonar-PogoDsl/pogodsl-checks/src/main/java/org/sonar/PogoDsl/checks/CompileIncludePathNotFoundOrInvalid.java
+/Users/Taty/Documents/runtime-Xtext2SonarTests/sonar-PogoDsl/pogodsl-checks/src/main/java/org/sonar/PogoDsl/checks/TooLongLineCheck.java
+/Users/Taty/Documents/runtime-Xtext2SonarTests/sonar-PogoDsl/pogodsl-checks/src/main/java/org/sonar/PogoDsl/checks/CheckList.java
+/Users/Taty/Documents/runtime-Xtext2SonarTests/sonar-PogoDsl/pogodsl-checks/src/main/java/org/sonar/PogoDsl/checks/FileComplexityCheck.java
