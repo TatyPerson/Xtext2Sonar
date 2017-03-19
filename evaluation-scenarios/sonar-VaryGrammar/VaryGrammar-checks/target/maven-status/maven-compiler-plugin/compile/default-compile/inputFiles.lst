@@ -1,0 +1,4 @@
+/Users/Taty/Documents/runtime-Xtext2SonarTests/sonar-VaryGrammar/varygrammar-checks/src/main/java/org/sonar/VaryGrammar/checks/CheckList.java
+/Users/Taty/Documents/runtime-Xtext2SonarTests/sonar-VaryGrammar/varygrammar-checks/src/main/java/org/sonar/VaryGrammar/checks/TooLongLineCheck.java
+/Users/Taty/Documents/runtime-Xtext2SonarTests/sonar-VaryGrammar/varygrammar-checks/src/main/java/org/sonar/VaryGrammar/checks/CompileIncludePathNotFoundOrInvalid.java
+/Users/Taty/Documents/runtime-Xtext2SonarTests/sonar-VaryGrammar/varygrammar-checks/src/main/java/org/sonar/VaryGrammar/checks/FileComplexityCheck.java

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<profile>
+  <name>varygrammar</name>
+  <language>varygrammar</language>
+  <rules>
+    <rule>
+      <repositoryKey>varygrammar</repositoryKey>
+      <key>CompileIncludePathNotFoundOrInvalid</key>  <!-- formatting rule -->
+      <priority>MINOR</priority>
+    </rule>
+    <rule>
+      <repositoryKey>varygrammar</repositoryKey>
+      <key>FileComplexity</key>  <!-- class name -->
+      <priority>MINOR</priority>
+    </rule>
+  </rules>
+</profile>

@@ -1,0 +1,102 @@
+package org.sonar.VaryGrammar.api;
+
+import com.sonar.sslr.api.Grammar;
+import com.sonar.sslr.api.Rule;
+
+public class VaryGrammar extends Grammar {
+	public Rule CODIGO;
+	public Rule ALGORITMO;
+	public Rule MODULO;
+	public Rule IMPLEMENTACION;
+	public Rule CABECERASUBPROCESO;
+	public Rule CABECERAPROCEDIMIENTO;
+	public Rule CABECERAFUNCION;
+	public Rule TIPOCOMPLEJO;
+	public Rule SUBPROCESO;
+	public Rule COMENTARIO;
+	public Rule SENTENCIAS;
+	public Rule BLOQUE;
+	public Rule DECLARACION;
+	public Rule FUNCIONFICHEROABRIR;
+	public Rule FUNCIONFICHEROCERRAR;
+	public Rule MODOAPERTURA;
+	public Rule NOMBREINTERNA;
+	public Rule EINT;
+	public Rule EFLOAT;
+	public Rule TIPO;
+	public Rule TIPODEFINIDO;
+	public Rule TIPOEXISTENTE;
+	public Rule CONSTANTES;
+	public Rule VECTOR;
+	public Rule MATRIZ;
+	public Rule REGISTRO;
+	public Rule ARCHIVO;
+	public Rule ENUMERADO;
+	public Rule SUBRANGO;
+	public Rule SUBRANGONUMERICO;
+	public Rule SUBRANGOENUMERADO;
+	public Rule INICIO;
+	public Rule ESTRING;
+	public Rule DECLARACIONVARIABLE;
+	public Rule DECLARACIONPROPIA;
+	public Rule ASIGNACION;
+	public Rule ASIGNACIONNORMAL;
+	public Rule ASIGNACIONCOMPLEJA;
+	public Rule ESCRIBIR;
+	public Rule LEER;
+	public Rule SI;
+	public Rule MIENTRAS;
+	public Rule REPETIR;
+	public Rule DESDE;
+	public Rule CASO;
+	public Rule SEGUN;
+	public Rule TIPOVARIABLE;
+	public Rule VARIABLE;
+	public Rule SIGNOOR;
+	public Rule SIGNOAND;
+	public Rule SIGNOIGUALDAD;
+	public Rule SIGNOCOMPARACION;
+	public Rule SIGNOSUMA;
+	public Rule SIGNORESTA;
+	public Rule SIGNOMULTIPLICACION;
+	public Rule SIGNODIVISION;
+	public Rule SIGNOMODULO;
+	public Rule SIGNODIV;
+	public Rule SIGNONO;
+	public Rule OPERACION;
+	public Rule OR;
+	public Rule AND;
+	public Rule MOD;
+	public Rule IGUALDAD;
+	public Rule COMPARACION;
+	public Rule SUMARESTA;
+	public Rule MULTIPLICACIONDIVISION;
+	public Rule OPERACIONINDICE;
+	public Rule ORINDICE;
+	public Rule ANDINDICE;
+	public Rule IGUALDADINDICE;
+	public Rule COMPARACIONINDICE;
+	public Rule SUMARESTAINDICE;
+	public Rule MULTIPLICACIONDIVISIONINDICE;
+	public Rule PRIMARIAINDICE;
+	public Rule PRIMARIA;
+	public Rule OPERACIONCOMPLETA;
+	public Rule OPERACIONPARENTESIS;
+	public Rule FUNCIONES;
+	public Rule CAMPOREGISTRO;
+	public Rule VARIABLESCOMPLEJAS;
+	public Rule VARIABLESBASICAS;
+	public Rule SINO;
+	public Rule DEVOLVER;
+	public Rule PARAMETROFUNCION;
+	public Rule FUNCION;
+	public Rule PROCEDIMIENTO;
+	public Rule TIPOPASO;
+	public Rule BOOLEANO;
+
+	@Override
+	public Rule getRootRule() {
+		// TODO Auto-generated method stub
+		return CODIGO;
+	}
+}
