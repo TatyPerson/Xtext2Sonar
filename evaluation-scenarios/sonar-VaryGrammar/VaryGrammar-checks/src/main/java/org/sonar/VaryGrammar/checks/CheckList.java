@@ -17,7 +17,11 @@ public final class CheckList {
   public static List<Class> getChecks() {
     return ImmutableList.<Class>of(
     	FileComplexityCheck.class,
-    	TooLongLineCheck.class
+    	TooLongLineCheck.class,
+    	TooMuchComplexityMain.class,
+    	TooManyGlobalVariables.class,
+    	TooLongNameVariable.class,
+    	MissingCommentsBeforeSubprocess.class
     );
   }
 

@@ -1,0 +1,4 @@
+org/sonar/VaryGrammar/checks/TooLongNameVariable.class
+org/sonar/VaryGrammar/checks/MissingCommentsBeforeSubprocess.class
+org/sonar/VaryGrammar/checks/TooMuchComplexityMain.class
+org/sonar/VaryGrammar/checks/TooManyGlobalVariables.class
