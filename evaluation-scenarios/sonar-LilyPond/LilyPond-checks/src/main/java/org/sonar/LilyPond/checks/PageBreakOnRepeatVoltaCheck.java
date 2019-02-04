@@ -44,17 +44,12 @@ public class PageBreakOnRepeatVoltaCheck extends SquidCheck<Grammar> implements 
 	    } catch (IOException e) {
 	      throw new SonarException(e); 
 	    }
-	    boolean repeatVolta = false;
+	    
 	    for (int i = 0; i < lines.size(); i++) {
 	      String line = lines.get(i);
 	      
-	      if(line.contains(REPEAT_VOLTA_KEYWORD)) {
-	    	  	repeatVolta = true;
-	      }
-	      
-	      if(repeatVolta && line.contains(PAGE_BREAK_KEYWORD)) {
+	      if(line.contains(REPEAT_VOLTA_KEYWORD) && line.contains(PAGE_BREAK_KEYWORD)) {
 	    	  	getContext().createLineViolation(this, "A page step cannot exist in a repeat volta instruction.", i + 1);
-	    	  	repeatVolta = false;
 	      }
 	    }
 	}
