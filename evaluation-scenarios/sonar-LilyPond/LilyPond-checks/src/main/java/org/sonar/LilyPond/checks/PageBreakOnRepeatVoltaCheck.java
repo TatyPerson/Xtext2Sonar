@@ -44,7 +44,7 @@ public class PageBreakOnRepeatVoltaCheck extends SquidCheck<Grammar> implements 
 	    } catch (IOException e) {
 	      throw new SonarException(e); 
 	    }
-	    
+
 	    for (int i = 0; i < lines.size(); i++) {
 	      String line = lines.get(i);
 	      
@@ -53,5 +53,4 @@ public class PageBreakOnRepeatVoltaCheck extends SquidCheck<Grammar> implements 
 	      }
 	    }
 	}
-
 }
